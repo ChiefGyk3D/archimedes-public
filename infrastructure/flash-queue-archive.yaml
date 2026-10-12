@@ -1,0 +1,455 @@
+# infrastructure/flash-queue-archive.yaml
+#
+# Archive of processed FLASH queue entries. Populated by the librarian
+# subagent at the 09:00 EDT catchup sweep (or earlier when the morning
+# brief absorbs a queued FLASH and supersedes it ahead of the catchup).
+#
+# Disposition values (per doctrine/FLASH-POLICY.md):
+#   - posted                          — catchup-posted to #flash-alerts with
+#                                       "QUEUED FROM OVERNIGHT" prefix
+#   - superseded_by_morning_brief     — 08:00 morning absorbed the finding;
+#                                       FLASH not posted separately
+#   - stale                           — > 12h elapsed without posting; not
+#                                       posted, logged + archived
+#   - critical_override_late_promotion — sweep promoted to critical-override
+#                                       and posted immediately despite quiet
+#                                       hours
+#
+# Schema mirrors infrastructure/flash-queue.yaml entries plus:
+#   - archived_at:    ISO-8601 with offset
+#   - disposition:    enum above
+#   - archived_by:    librarian run_id
+#   - librarian_note: free-form supersession / disposition reasoning
+
+version: 1
+last_updated: 2026-07-30T18:00:00-04:00
+
+archive:
+  # ==========================================================================
+  # 2026-07-07 post-outage catchup: stale-archive of the entire live queue.
+  # Ops were paused ~2026-06-20 -> 07-06 (credential outage); the 09:00 EDT
+  # catchup sweep did not run during that window, so every queued FLASH aged
+  # well past its 12h staleness threshold (all expires_at in May/June 2026).
+  # Per flash-queue.yaml header procedure: stale (>12h past expires_at) -> log
+  # + archive. All 8 entries moved here with disposition: stale; live queue
+  # emptied to []. No entry dropped.
+  # ==========================================================================
+  - queued_at: 2026-05-23T06:00:00-04:00
+    archived_at: 2026-07-07T23:29:49-04:00
+    archived_by: librarian-20260707-2329
+    disposition: stale
+    brief_id: flash-2026-05-23-0600-001-unc1549-screening-serpens-tradecraft-evolution
+    brief_path: threats/briefs/2026-05-23-flash-0600-001-unc1549-screening-serpens-tradecraft-evolution.md
+    finding_id: finding-2026-05-23-FLASH-0001
+    trigger: trigger-4-tracked-actor-ttp-change
+    cve: null
+    related_actor: "004"
+    digraph: A2
+    expires_at: 2026-05-23T18:00:00-04:00
+    catchup_sweep: 2026-05-23T09:00:00-04:00
+    superseded: false
+    superseded_by: null
+    librarian_note: |
+      archived 2026-07-07 during post-outage catchup; 09:00 catchup did not run
+      during the 2026-06-20->07-06 credential outage. Entry aged ~6.5 weeks past
+      its 2026-05-23T18:00 expiry — far beyond the 12h staleness window. Not
+      posted to #flash-alerts (stale disposition). UNC1549 (#004) tradecraft
+      substrate remains available in the finding + brief on disk for any future
+      actor-profiler /update-tracking pickup; this is a queue-hygiene archive
+      only, not a content retraction.
+
+  - queued_at: 2026-05-23T06:00:00-04:00
+    archived_at: 2026-07-07T23:29:49-04:00
+    archived_by: librarian-20260707-2329
+    disposition: stale
+    brief_id: flash-2026-05-23-0600-002-litespeed-cpanel-cve-2026-48172
+    brief_path: threats/briefs/2026-05-23-flash-0600-002-litespeed-cpanel-cve-2026-48172.md
+    finding_id: finding-2026-05-23-FLASH-0002
+    trigger: trigger-1-critical-cve-exploited
+    cve: CVE-2026-48172
+    related_actor: null
+    digraph: A2
+    expires_at: 2026-05-23T18:00:00-04:00
+    catchup_sweep: 2026-05-23T09:00:00-04:00
+    superseded: false
+    superseded_by: null
+    librarian_note: |
+      archived 2026-07-07 during post-outage catchup; 09:00 catchup did not run
+      during the 2026-06-20->07-06 credential outage. Entry aged ~6.5 weeks past
+      its 2026-05-23T18:00 expiry. Not posted (stale). CVE-2026-48172 LiteSpeed
+      cPanel content preserved in finding + brief on disk.
+
+  - queued_at: 2026-05-20T06:08:00-04:00
+    archived_at: 2026-07-07T23:29:49-04:00
+    archived_by: librarian-20260707-2329
+    disposition: stale
+    brief_id: flash-2026-05-20-0608-teampcp-github-internal-repos
+    brief_path: threats/briefs/2026-05-20-flash-teampcp-github-internal-repos.md
+    finding_id: finding-2026-05-20-FLASH-0001
+    trigger: trigger-2-new-attribution
+    secondary_trigger: trigger-4-tracked-actor-ttp-change
+    cve: null
+    related_vuln: CVE-2026-45321
+    digraph: B2
+    expires_at: 2026-05-20T18:08:00-04:00
+    catchup_sweep: 2026-05-20T09:00:00-04:00
+    superseded: false
+    superseded_by: null
+    librarian_note: |
+      archived 2026-07-07 during post-outage catchup; 09:00 catchup did not run
+      during the 2026-06-20->07-06 credential outage. Entry aged ~7 weeks past
+      its 2026-05-20T18:08 expiry. Not posted (stale). TeamPCP GitHub-corp breach
+      content preserved in finding + brief on disk.
+
+  - queued_at: 2026-05-15T06:55:00-04:00
+    archived_at: 2026-07-07T23:29:49-04:00
+    archived_by: librarian-20260707-2329
+    disposition: stale
+    brief_id: flash-2026-05-15-0600-exchange-cve-2026-42897
+    brief_path: threats/briefs/flash-2026-05-15-0600-exchange-cve-2026-42897.md
+    finding_id: finding-2026-05-15-FLASH-0001
+    trigger: trigger-6-zero-day-no-patch
+    secondary_trigger: trigger-1-critical-cve-exploited
+    cve: CVE-2026-42897
+    digraph: A2
+    expires_at: 2026-05-15T18:55:00-04:00
+    catchup_sweep: 2026-05-15T09:00:00-04:00
+    superseded: true
+    superseded_by: 2026-05-15-morning
+    superseded_at: 2026-05-15T08:00:00-04:00
+    librarian_note: |
+      archived 2026-07-07 during post-outage catchup; 09:00 catchup did not run
+      during the 2026-06-20->07-06 credential outage. NOTE: this entry was
+      already marked superseded:true by 2026-05-15-morning on 2026-05-15 but was
+      never physically moved to the archive. Disposition recorded as stale for
+      the queue-hygiene sweep; the pre-existing superseded_by / superseded_at
+      fields are preserved for audit. Not posted.
+
+  - queued_at: 2026-05-15T06:55:00-04:00
+    archived_at: 2026-07-07T23:29:49-04:00
+    archived_by: librarian-20260707-2329
+    disposition: stale
+    brief_id: flash-2026-05-15-0600-teampcp-shai-hulud-release
+    brief_path: threats/briefs/flash-2026-05-15-0600-teampcp-shai-hulud-release.md
+    finding_id: finding-2026-05-15-FLASH-0002
+    trigger: trigger-4-tracked-actor-ttp-change
+    secondary_trigger: trigger-2-new-attribution
+    cve: null
+    related_vuln: CVE-2026-45321
+    digraph: B2
+    expires_at: 2026-05-15T18:55:00-04:00
+    catchup_sweep: 2026-05-15T09:00:00-04:00
+    superseded: true
+    superseded_by: 2026-05-15-morning
+    superseded_at: 2026-05-15T08:00:00-04:00
+    librarian_note: |
+      archived 2026-07-07 during post-outage catchup; 09:00 catchup did not run
+      during the 2026-06-20->07-06 credential outage. NOTE: already marked
+      superseded:true by 2026-05-15-morning on 2026-05-15 but never physically
+      archived. Disposition recorded as stale; pre-existing superseded fields
+      preserved. Not posted.
+
+  - queued_at: 2026-05-07T00:50:00-04:00
+    archived_at: 2026-07-07T23:29:49-04:00
+    archived_by: librarian-20260707-2329
+    disposition: stale
+    brief_id: flash-2026-05-07-0000
+    brief_path: threats/briefs/2026-05-07-flash-0000-pan-os-cl-sta-1132.md
+    finding_id: finding-2026-05-07-FLASH-0001
+    trigger: trigger-1-critical-cve-exploited
+    cve: CVE-2026-0300
+    digraph: A2
+    expires_at: 2026-05-07T12:50:00-04:00
+    catchup_sweep: 2026-05-07T09:00:00-04:00
+    superseded: true
+    superseded_by: 2026-05-07-morning
+    superseded_at: 2026-05-07T08:00:45-04:00
+    librarian_note: |
+      archived 2026-07-07 during post-outage catchup; 09:00 catchup did not run
+      during the 2026-06-20->07-06 credential outage. NOTE: already marked
+      superseded:true by 2026-05-07-morning on 2026-05-07 but never physically
+      archived. Disposition recorded as stale; pre-existing superseded fields
+      preserved. Not posted.
+
+  - queued_at: 2026-06-10T01:25:00-04:00
+    archived_at: 2026-07-07T23:29:49-04:00
+    archived_by: librarian-20260707-2329
+    disposition: stale
+    brief_id: flash-2026-06-10-0125
+    brief_path: threats/briefs/flash-2026-06-10-0125.md
+    finding_id: finding-2026-06-10-flash-0000-002
+    bundled_findings:
+      - finding-2026-06-10-flash-0000-001
+      - finding-2026-06-10-flash-0000-002
+      - finding-2026-06-10-flash-0000-003
+    trigger: trigger-1-critical-cve-exploited
+    secondary_trigger: trigger-6-zero-day-no-patch
+    cve: CVE-2026-50751
+    related_cves: [CVE-2026-50751, CVE-2026-50752, CVE-2026-11645, CVE-2026-42271, CVE-2026-48710]
+    digraph: A1
+    expires_at: 2026-06-10T13:25:00-04:00
+    catchup_sweep: 2026-06-10T09:00:00-04:00
+    superseded: partial
+    superseded_by: 2026-06-10-morning
+    superseded_at: 2026-06-10T08:00:00-04:00
+    librarian_note: |
+      archived 2026-07-07 during post-outage catchup; 09:00 catchup did not run
+      during the 2026-06-20->07-06 credential outage. This bundled triple-KEV
+      entry carried do_not_archive:true pending its 2026-06-10 09:00 catchup for
+      the un-absorbed Chrome V8 (CVE-2026-11645) + LiteLLM (CVE-2026-42271)
+      components (the Check Point CVE-2026-50751 line was absorbed by the
+      2026-06-10-morning brief). That catchup never ran and the entry aged ~4
+      weeks past its 2026-06-10T13:25 expiry. Resolving do_not_archive -> stale:
+      the remaining Chrome + LiteLLM components are far past freshness and both
+      CVEs were already shipped in the original 2026-06-10 FLASH — re-posting now
+      would be stale duplicate signal. Not posted. superseded:partial preserved
+      for audit.
+
+  # (The flash-2026-06-11-0608 entry referenced in the flash-queue.yaml trailing
+  #  comment was already archived 2026-06-11 as superseded_by_morning_brief — it
+  #  appears in the pre-outage archive section immediately below, not re-archived.)
+
+  - queued_at: 2026-06-11T06:08:00-04:00
+    archived_at: 2026-06-11T08:34:00-04:00
+    archived_by: librarian-20260611-0800
+    disposition: superseded_by_morning_brief
+    brief_id: flash-2026-06-11-0608
+    brief_path: threats/briefs/2026-06-11-flash-0608-ivanti-sentry-cve-2026-10520.md
+    finding_id: finding-2026-06-11-0001
+    trigger: trigger-1-critical-cve-exploited
+    secondary_trigger: null
+    cve: CVE-2026-10520
+    related_cves: [CVE-2026-10520, CVE-2026-10523]
+    digraph: A2
+    wep:
+      cluster_anchor: likely
+    critical_override_applied: false
+    quiet_hours_at_queue: true
+    expires_at: 2026-06-11T18:08:00-04:00
+    catchup_sweep: 2026-06-11T09:00:00-04:00
+    superseded: true
+    superseded_by: 2026-06-11-morning
+    superseded_at: 2026-06-11T08:00:00-04:00
+    superseded_by_path: threats/briefs/2026-06-11-morning.md
+    red_team_adjustment_applied: true
+    tlp: CLEAR
+    notes: |
+      Quiet-hours queue (06:08 EDT, inside 21:00-09:00 EDT window).
+      Critical-override evaluated and did NOT apply (CVSS 10.0 PASS,
+      active exploitation PASS, no tracked actor in roster FAIL, no
+      A&D-prime victim named FAIL — 2 of 4). Queued for 09:00 EDT
+      catchup with predicted disposition superseded_by_morning_brief.
+    librarian_note: |
+      Disposition confirmed: morning brief 2026-06-11-morning absorbed
+      finding-2026-06-11-0001 (Ivanti Sentry CVE-2026-10520 ITW state
+      transition) as the Active Threats lead UPDATE item with full
+      coverage of:
+        - Shadowserver telemetry (19 Internet-exposed instances scanned,
+          2 confirmed backdoored)
+        - watchTowr Labs PoC published 2026-06-10 targeting POST
+          /mics/api/v2/sentry/mics-config/handleMessage
+        - Emergency patch action set (R10.5.2 / R10.6.2 / R10.7.1)
+        - CVE-2026-10523 (CVSS 9.9 auth bypass) carry-over flag
+        - Red-team WEP adjustment honored at cluster anchor "likely"
+          (mechanism layer holds at very_likely; ITW-scope question
+          "mass" deferred pending second scanner corroboration)
+      Brief frontmatter records supersession_block.flash_brief_id:
+      flash-2026-06-11-0608 with supersession_type: full and
+      flash_items_absorbed list intact. Per briefer handoff and
+      operator instruction, NO "QUEUED FROM OVERNIGHT" catchup post
+      to #flash-alerts at 09:00 — would be duplicate signal per
+      FLASH-POLICY anti-noise rule. Catchup sweep run early (08:34
+      EDT) coincident with morning brief delivery rather than waiting
+      for the 09:00 catchup window — same pattern as 2026-05-06 PAN-OS
+      and 2026-05-12 Mini Shai-Hulud supersessions.
+      Splunk events shipped: brief_published (morning), flash_superseded
+      (this entry), plus finding_published x4 + git_committed.
+      Discord posts: Layer 2 morning summary delivered to #intel-briefs
+      (message_id 1514608639971823766); #flash-alerts intentionally
+      silent on this topic per supersession_type:full.
+
+
+  - queued_at: 2026-05-12T06:30:00-04:00
+    archived_at: 2026-05-12T08:00:00-04:00
+    archived_by: librarian-20260512-080000
+    disposition: superseded_by_morning_brief
+    brief_id: flash-2026-05-12-0600
+    brief_path: threats/briefs/2026-05-12-flash-0600-teampcp-mini-shai-hulud.md
+    finding_id: finding-2026-05-12-FLASH-0001
+    trigger: trigger-1-critical-cve-exploited
+    secondary_trigger: trigger-4-tracked-actor-ttp-change
+    cve: CVE-2026-45321
+    digraph: A2
+    wep:
+      procedural_facts: very_likely
+      worm_propagation: very_likely
+      teampcp_attribution: likely
+      novelty_slsa_breaking_claim: likely
+    critical_override_applied: false
+    critical_override_evaluation:
+      cvss_10_0_floor: false        # CVSS 9.6 < 10.0
+      active_exploitation: true
+      tracked_actor_involved: true   # TeamPCP #001 HIGH
+      ad_watchlist_targeted: false   # @squawk aviation incidental, no watchlist prime named
+      conditions_met: 2_of_4
+    quiet_hours_at_queue: true
+    expires_at: 2026-05-12T18:30:00-04:00
+    catchup_sweep: 2026-05-12T09:00:00-04:00
+    superseded: true
+    superseded_by: 2026-05-12-morning
+    superseded_at: 2026-05-12T08:00:00-04:00
+    superseded_by_path: threats/briefs/2026-05-12-morning.md
+    notes: |
+      First TeamPCP supply-chain FLASH on the Mini Shai-Hulud campaign (npm + PyPI
+      worm; ~172 packages compromised in mass-exploitation pattern; CVE-2026-45321
+      CVSS 9.6; GHSA-g7cv-rxg3-hmpx). Distinct topic from the 2026-05-11 06:00
+      Checkmarx Jenkins AST plugin FLASH per 8-dimension comparison (different
+      ecosystem npm+PyPI vs. Jenkins Marketplace, different scale 172 vs. 1, different
+      capability layer self-propagating worm vs. single-strike, different CVE, different
+      originating research StepSecurity+Wiz+Snyk vs. Checkmarx PSIRT). Anti-noise rule
+      "one FLASH per topic per 24h" applies per-topic not per-actor — distinct topic
+      clears the rule.
+
+      Critical override evaluation: 2 of 4 conditions met. Active exploitation YES
+      (Wiz/Snyk/StepSecurity live-scan corroborated). Tracked actor YES (TeamPCP #001
+      HIGH). CVSS 9.6 < 10.0 floor (FAIL hard threshold). No A&D watchlist entity
+      named as target — @squawk aviation-developer ecosystem (19 packages) hit
+      appears incidental via worm enumeration not strategic targeting (red-team
+      constraint preserved this reading; FAIL). Override fails by CVSS floor and
+      A&D-watchlist-entity-named test.
+
+      Disposition prediction: 08:00 morning brief is very likely to absorb this
+      content as a lead/Active Threats item given operational significance and
+      A-grade source backbone. Predict 09:00 catchup sweep marks superseded:true,
+      superseded_by: 2026-05-12-morning, archive disposition
+      superseded_by_morning_brief. If morning brief omits the Mini Shai-Hulud
+      coverage for any reason, catchup posts with "QUEUED FROM OVERNIGHT" prefix
+      to #flash-alerts.
+
+      Anti-noise rule 4 self-review flag: TeamPCP-attributed FLASH count in 7-day
+      window approaches the documented 10/week threshold. Pattern observation
+      surfaced for weekly synthesis (2026-05-17) — concentrated TeamPCP cadence
+      (PyTorch Lightning ShaiWorm 2026-05-04 -> Checkmarx Jenkins 2026-05-11 ->
+      Mini Shai-Hulud 2026-05-12) suggests an active campaign window worth
+      longitudinal treatment, not noise.
+    librarian_note: |
+      Disposition confirmed: morning brief 2026-05-12-morning absorbed
+      finding-2026-05-12-FLASH-0001 as the Active Threats lead item with full
+      coverage of attribution (TeamPCP via Wiz + StepSecurity; Snyk relays),
+      CVE-2026-45321 / CVSS 9.6, the SLSA-attestation-bypass novelty caveat
+      (per Wiz/Snyk, scoped to Shai-Hulud family lineage), and the DIB CI/CD
+      action set. Brief frontmatter records absorbs_flash: flash-2026-05-12-0600
+      and the supersession_action_owner: librarian assignment. Re-posting the
+      queued FLASH to #flash-alerts at the 09:00 catchup would be duplicate
+      signal per FLASH-POLICY anti-noise. Catchup sweep run early (08:00 EDT)
+      coincident with morning brief delivery rather than waiting for the 09:00
+      window — same pattern as the 2026-05-06 PAN-OS supersession.
+
+  - queued_at: 2026-05-06T06:55:00-04:00
+    archived_at: 2026-05-06T08:00:00-04:00
+    archived_by: librarian-20260506-080000
+    disposition: superseded_by_morning_brief
+    brief_id: flash-2026-05-06-0600
+    brief_path: threats/briefs/2026-05-06-flash-pan-os-cve-2026-0300.md
+    finding_id: finding-2026-05-06-FLASH-0001
+    trigger: trigger-1-critical-cve-exploited
+    secondary_trigger: trigger-6-zero-day-no-patch
+    cve: CVE-2026-0300
+    digraph: A2
+    wep: likely
+    critical_override_applied: false
+    quiet_hours_at_queue: true
+    expires_at: 2026-05-06T18:55:00-04:00
+    catchup_sweep: 2026-05-06T09:00:00-04:00
+    superseded: true
+    superseded_by: 2026-05-06-morning
+    superseded_by_path: threats/briefs/2026-05-06-morning.md
+    notes: |
+      Queued during 06:00 EDT quiet-hours sweep. 08:00 morning brief is 65
+      minutes after queue time; expect 09:00 catchup to mark superseded if
+      morning brief absorbs the finding (intended path per FLASH-POLICY
+      anti-noise). Critical override does not apply (CVSS 9.3 not 10.0; no
+      tracked actor named in any source per Hard Rule 2; no A&D watchlist
+      entity named as target). Single-source veto applied at WEP "likely";
+      auto-downgrade clock at +72h (2026-05-09 06:14 EDT) if no second A/B
+      independent confirmation, no IOCs published, no CISA KEV addition.
+    librarian_note: |
+      Catchup sweep run early (08:00 EDT) coincident with morning brief
+      delivery rather than waiting for the 09:00 catchup window. Morning
+      brief 2026-05-06-morning absorbed finding-2026-05-06-FLASH-0001 as
+      its lead item with full Active Threats coverage, mitigation triage,
+      and the +72h auto-downgrade clock — re-posting the queued FLASH to
+      #flash-alerts would be duplicate signal per FLASH-POLICY anti-noise.
+      Brief frontmatter records absorbs_flash: flash-2026-05-06-0600 for
+      audit trail. No new IOCs introduced (PAN-OS finding has no IOCs
+      published); no master-index regeneration required. Two Splunk events
+      shipped: brief_published (morning) + flash_superseded (this entry).
+      Discord post: morning summary delivered to #intel-briefs only;
+      #flash-alerts intentionally silent on this topic.
+
+  - queued_at: 2026-07-24T06:50:00-04:00
+    archived_at: 2026-07-24T08:01:00-04:00
+    archived_by: librarian-20260724-080045
+    disposition: superseded_by_morning_brief
+    brief_id: flash-2026-07-24-0650
+    brief_path: threats/briefs/flash-2026-07-24-0650.md
+    finding_id: finding-2026-07-24-flash-0600-0001
+    trigger: critical-cve-exploited
+    secondary_trigger: tracked-actor-ttp-change
+    cve: CVE-2026-12569
+    digraph: A1
+    wep: very likely
+    critical_override_applied: false
+    quiet_hours_at_queue: true
+    expires_at: 2026-07-24T18:50:00-04:00
+    catchup_sweep: 2026-07-24T09:00:00-04:00
+    superseded: true
+    superseded_by: 2026-07-24-morning
+    librarian_note: |
+      08:00 morning brief 2026-07-24-morning absorbed
+      finding-2026-07-24-flash-0600-0001 (CVE-2026-12569 PTC Windchill/FlexPLM
+      active exploitation, CVSS 9.3, CISA KEV 2026-06-25) as its lead Active
+      Threats item with full mitigation triage, a dedicated Vulnerabilities
+      section, and the hedged Cl0p (#018) B3 attribution in Actor Activity.
+      Superseded ahead of the 09:00 catchup sweep — re-posting the queued FLASH
+      to #flash-alerts would be duplicate signal per FLASH-POLICY anti-noise.
+      The morning brief is the FIRST and ONLY Discord delivery of CVE-2026-12569;
+      #flash-alerts intentionally silent on this topic. Brief frontmatter records
+      supersedes: flash-2026-07-24-0650. IOC support@cryptohox.com is net-new at
+      the finding level but not yet written to any actor iocs.yaml or unattributed
+      cluster, so no master-index regeneration this run (regen reads only those
+      two source buckets — a regen would be a content-free timestamp bump). Splunk
+      events: brief_published (morning) + flash_superseded (this entry) +
+      git_committed.
+
+  - queued_at: 2026-07-28T06:25:00-04:00
+    archived_at: 2026-07-30T18:00:00-04:00
+    archived_by: librarian-20260730-180045
+    disposition: stale
+    brief_id: flash-2026-07-28-0625
+    brief_path: threats/briefs/flash-2026-07-28-0625.md
+    finding_id: finding-2026-07-28-flash-0600-0001
+    trigger: zero-day-no-patch
+    cve: CVE-2026-16723
+    digraph: B2
+    wep: likely
+    critical_override_applied: false
+    quiet_hours_at_queue: true
+    expires_at: 2026-07-28T18:25:00-04:00
+    catchup_sweep: 2026-07-28T09:00:00-04:00
+    superseded: false
+    superseded_by: null
+    librarian_note: |
+      Fastjson 1.x EOL unpatched RCE (CVE-2026-16723), B2 single-source veto
+      (SecurityWeek relay only). Queued 2026-07-28 06:25 EDT during quiet hours
+      (override 0-of-4). Expired unposted at 2026-07-28 18:25 EDT and was NEVER
+      superseded — the 2026-07-28 09:00 catchup sweep and subsequent sweeps did
+      not clear it. Now ~48h past expiry (queue-hygiene sweep 2026-07-30 18:00
+      EDT), far beyond the 12h staleness window. Per FLASH-POLICY staleness
+      procedure + flash-queue.yaml header: stale (>12h past expires_at) -> log +
+      archive, not posted. Grader/briefer flagged likely absorption into the
+      2026-07-28 08:00 morning brief but that absorption was never confirmed at
+      the queue level (likely-absorbed-but-unconfirmed); B2 single-source-veto
+      content remains available in the finding + brief on disk for any future
+      pickup. Not posted to #flash-alerts. Queue-hygiene archive only, not a
+      content retraction. Live queue emptied to [].

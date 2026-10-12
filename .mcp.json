@@ -1,0 +1,76 @@
+{
+  "mcpServers": {
+    "splunk-query": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "mcps/splunk-query",
+        "splunk-query"
+      ]
+    },
+    "virustotal": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "mcps/virustotal",
+        "virustotal"
+      ]
+    },
+    "shodan": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "mcps/shodan-mcp",
+        "shodan-mcp"
+      ]
+    },
+    "rss-bridge": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "mcps/rss-bridge",
+        "rss-bridge"
+      ]
+    },
+    "urlscan": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "mcps/urlscan",
+        "urlscan"
+      ]
+    },
+    "censys": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "mcps/censys",
+        "censys"
+      ]
+    },
+    "theharvester": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "mcps/theharvester",
+        "theharvester-mcp"
+      ]
+    },
+    "spiderfoot": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "mcps/spiderfoot",
+        "spiderfoot-mcp"
+      ]
+    }
+  }
+}

@@ -1,0 +1,1641 @@
+# infrastructure/source-grades.yaml
+#
+# Agent-queryable pre-assigned source reliability grades.
+# Source of truth for doctrine is doctrine/INTEL-GRADING.md — this file
+# is generated from that. Do not hand-edit without updating the doctrine.
+#
+# The grader reads this file for every finding to resolve source reliability.
+# The collector reads this file to know which sources are active vs. disabled.
+
+version: 1
+last_updated: 2026-07-20T06:15:00-04:00
+doctrine_version: "1.0.0"
+
+# ============================================================================
+# Government & Official Bodies
+# ============================================================================
+government_sources:
+  - id: cisa-advisories
+    name: "CISA Advisories"
+    category: government
+    grade: A
+    active: true
+    rationale: "Official U.S. gov, technically verified before publication"
+    urls:
+      - https://www.cisa.gov/news-events/cybersecurity-advisories
+    rss: https://www.cisa.gov/cybersecurity-advisories/all.xml
+  
+  - id: cisa-kev
+    name: "CISA Known Exploited Vulnerabilities"
+    category: government
+    grade: A
+    active: true
+    rationale: "Authoritative list of exploited CVEs with patch deadlines"
+    urls:
+      - https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+    json_feed: https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json
+  
+  - id: nsa-cnsa
+    name: "NSA / CNSA Advisories"
+    category: government
+    grade: A
+    active: true
+    rationale: "Authoritative, technically vetted"
+    urls:
+      - https://www.nsa.gov/Press-Room/Press-Releases-Statements/
+  
+  - id: fbi-flash
+    name: "FBI Flash Alerts"
+    category: government
+    grade: A
+    active: true
+    rationale: "Law enforcement intelligence, operationally verified"
+    urls:
+      - https://www.ic3.gov/Media/News/Index
+  
+  - id: mitre-attack
+    name: "MITRE ATT&CK"
+    category: reference
+    grade: A
+    active: true
+    rationale: "Curated, community-verified TTP knowledge base"
+    urls:
+      - https://attack.mitre.org/
+  
+  - id: dod-cmmc
+    name: "DoD / CMMC Bulletins"
+    category: government
+    grade: B
+    active: true
+    rationale: "Official but sometimes delayed or sanitized"
+  
+  - id: nvd
+    name: "NVD / CVE Database"
+    category: reference
+    grade: A
+    active: true
+    rationale: "Authoritative for the CVE record itself"
+    urls:
+      - https://nvd.nist.gov/
+
+  - id: abw
+    name: "Polish Internal Security Agency (ABW)"
+    category: government
+    grade: B
+    provisional: true
+    provisional_since: 2026-05-08
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-08-0009 (Polish water-utility ICS breach attribution to APT28 / APT29 / UNC1151). Foreign government national security agency — official-body category. Proposed grade B by the briefer/grader, conservative starting grade for a foreign-government source where attribution methodology is not visible to Archimedes (ABW did not publish technical IOCs or methodology with this advisory; relayed via SecurityWeek). Operator may ratify at B, upgrade toward A if subsequent ABW outputs include verifiable technical content, or downgrade if attribution patterns prove non-canonical (the operational-doctrine caveat in finding 0009 ranks shorthand-naming and cooperative-tasking readings more probable than literal direct-GRU/SVR ICS-modify attribution)."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://www.gov.pl/web/sluzby-specjalne/abw
+
+  - id: ccb
+    name: "Centre for Cybersecurity Belgium (CCB)"
+    category: government
+    grade: B
+    provisional: true
+    provisional_since: 2026-06-01
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-06-01-0002 (Windows Netlogon CVE-2026-41089 ITW state transition; sole government-CERT primary, re-reported by BleepingComputer and SecurityWeek). National cybersecurity authority of Belgium — official-body / government-CERT category. Provisional B follows the same conservative starting-grade precedent as Polish ABW (2026-05-08 provisional B baseline for foreign-government national-security-agency / CERT-class sources where attribution methodology is not yet visible to Archimedes across multiple findings). CCB's Netlogon advisory observed ITW exploitation without publishing technical IOCs or actor attribution — same evidentiary profile as the ABW first surface. Operator may ratify at B, upgrade toward A if subsequent CCB outputs include verifiable technical content (IOCs, telemetry, methodology), or downgrade if subsequent advisories prove low-fidelity. Pending human ratification per source-grade-log.md."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://ccb.belgium.be/en
+
+  - id: mi5-fbi-asio-csis-nzsis-joint
+    name: "Five Eyes Counterintelligence Joint Advisory (MI5 / FBI / ASIO / CSIS / NZSIS)"
+    category: government
+    grade: A
+    provisional: true
+    provisional_since: 2026-06-04
+    provisional_reason: "First Archimedes-corpus citation of the Five Eyes counterintelligence joint-advisory publication channel via finding-2026-06-04-0002 (\"Safeguarding Our Secrets\" joint advisory on China's military intelligence services running LinkedIn-led HUMINT recruitment against cleared personnel; MI5 lead with FBI / ASIO / CSIS / NZSIS co-signatories; published 2026-06-04 via mi5.gov.uk and confirmed by The Record and additional Tier-1 trade press relays). Same precedent class as existing A-grade government joint-advisory products: CISA + NSA + FBI Flash joint cybersecurity advisories, CISA + NCSC joint advisories, CISA + ASD + CSIS / NCSC-NZ joint advisories. Five Eyes counterintelligence joint publications are first-party authoritative on the procedural facts of the advisory (named victim populations, named tradecraft patterns, named tradecraft hand-off mechanisms, named monetary scale, named partnering-agency coordination), with verbatim attribution preserved per Hard Rule 2 (this advisory's attribution string is \"China's military intelligence services\" — generic PLA-linked, NOT a specific tracked actor; do NOT propagate to APT41 / Volt Typhoon / Salt Typhoon / APT40 or any roster-tracked actor without an independent A-grade vendor attribution layer). Scope of A grade: counterintelligence tradecraft characterization, named-agency partnering coordination, victim-population scoping, monetary-scale framing, mechanism descriptions (LinkedIn outreach, front-company-as-recruiter, virtual interviews, encrypted-messaging hand-off). 72h ratification clock to 2026-06-07T16:24:00-04:00 (72h from afternoon brief composition). Pending human ratification per source-grade-log.md."
+    awaiting_ratification: true
+    awaiting_direct_retrieval: false
+    active: true
+    urls:
+      - https://www.mi5.gov.uk/
+      - https://www.fbi.gov/
+      - https://www.asio.gov.au/
+      - https://www.canada.ca/en/security-intelligence-service.html
+      - https://www.nzsis.govt.nz/
+
+  - id: europol-coordinated-announcement
+    name: "Europol Coordinated Announcements"
+    category: government
+    grade: A
+    provisional: true
+    provisional_since: 2026-06-11
+    provisional_reason: "First Archimedes-corpus dedicated source ID via finding-2026-06-11-0011 (Operation against the AudiA6 crypto-laundering service: 11-country Europol operation, 2 administrators charged — Tkachuk and Ledenev — detained in Georgia; 25 domains + €86k crypto seized + €692k frozen + Telegram blocked; >$380M laundered linked to 15+ international ransomware investigations). Europol coordinated-action communiqués are the inter-jurisdictional law-enforcement equivalent of an FBI Flash / DOJ filing primary — official, operationally verified before publication, charged-subject names backed by indictment paperwork from contributing member states. Procedurally A-grade per same precedent as FBI Flash (corpus baseline A), DOJ filings (corpus baseline A), and CISA Advisories. This sweep cited via BleepingComputer B-grade relay; no direct Europol press-release URL retrieved. 72h ratification clock to 2026-06-14T16:00:00-04:00. Pending direct retrieval of europol.europa.eu/media-press/newsroom primary AND human ratification."
+    awaiting_ratification: true
+    awaiting_direct_retrieval: true
+    ratification_clock: 2026-06-14T16:00:00-04:00
+    provenance: finding-2026-06-11-0011
+    active: true
+    urls:
+      - https://www.europol.europa.eu/media-press/newsroom
+
+  - id: doj-federal-court-filings
+    name: "U.S. DOJ Federal Court Filings (indictments, complaints, press releases)"
+    category: government
+    grade: A
+    provisional: true
+    provisional_since: 2026-06-11
+    provisional_reason: "First Archimedes-corpus dedicated source ID via finding-2026-06-11-0007 (DOJ indictment of Denis Obrezko, 36, Russian national, for infrastructure-provider role in Void Blizzard cyberespionage cluster; arrested November 2025 in Phuket Thailand on joint FBI / Thai Royal Police operation; extradited; initial Boston federal court appearance 2026-06-10; prosecutors allege cryptocurrency-purchased VPS + domains used as Void Blizzard attack infrastructure against at least 11 U.S. companies). DOJ federal-court filings (indictments, complaints, sealed/unsealed motions, sentencing memoranda, and the press releases that accompany them) are official U.S. government law-enforcement primaries — procedurally A-grade per same precedent as FBI Flash / CISA Advisories / NSA-CNSA. This sweep cited via The Record B-grade relay only; the direct DOJ press release and the underlying Boston federal court docket were NOT directly retrieved. Provisional A pivots on first direct retrieval of justice.gov primary. 72h ratification clock to 2026-06-14T16:00:00-04:00. Pending direct retrieval AND human ratification. The /new-actor decision on Void Blizzard is explicitly DEFERRED at compose pending exactly that DOJ-primary retrieval per Hard Rule 2 attribution-origination discipline."
+    awaiting_ratification: true
+    awaiting_direct_retrieval: true
+    ratification_clock: 2026-06-14T16:00:00-04:00
+    provenance: finding-2026-06-11-0007
+    active: true
+    urls:
+      - https://www.justice.gov/news
+
+  - id: canadian-centre-cyber-security
+    name: "Canadian Centre for Cyber Security (CCCS / Cyber Centre, CSE)"
+    category: government
+    grade: B
+    provisional: true
+    provisional_since: 2026-07-06
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-07-06-flash-1629-0001 (Adobe ColdFusion CVE-2026-48282 max-severity unauth RCE active-exploitation observation; CCCS co-attests exploitation independently of KEVIntel honeypot telemetry — different organizations, different evidence bases, neither cites the other). CCCS is the Canadian national cyber authority (Five Eyes; unified Canadian CISA/NCSC analog under the Communications Security Establishment). Foreign-government national-cyber-authority / government-CERT category. Provisional B follows the established ABW (2026-05-08) and CCB (2026-06-01) precedent for first-surface foreign national cyber/CERT bodies making a procedural active-exploitation observation (CISA-analog claim type). Operator may upgrade toward A given CCCS is a Five Eyes national cyber authority making a CISA-analog procedural observation (A-graded class), but conservative starting grade is B. This surface: relay-only via BleepingComputer; CCCS advisory primary NOT directly retrieved (awaiting_direct_retrieval preserved as a separate collection todo, not a grade blocker)."
+    awaiting_ratification: false
+    ratified_by: ryan
+    ratified_at: 2026-07-07
+    awaiting_direct_retrieval: true
+    provenance: finding-2026-07-06-flash-1629-0001
+    active: true
+    urls:
+      - https://www.cyber.gc.ca/en/
+
+  - id: singapore-csa
+    name: "Singapore Cyber Security Agency (CSA)"
+    category: government
+    grade: B
+    provisional: true
+    provisional_since: 2026-07-10
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-07-10-0003 (Gitea CVE-2026-20896 Docker-image pre-auth auth-bypass active-exploitation escalation; Singapore CSA issued a national-CERT active-exploitation warning corroborating the originating Sysdig research). CSA is Singapore's national cyber authority / government-CERT. Foreign-government national-cyber-authority / CERT category. Provisional B follows the established ABW (2026-05-08), CCB (2026-06-01), and CCCS (2026-07-06) precedent for first-surface foreign national cyber/CERT bodies making a procedural active-exploitation observation (CISA-analog claim type) — conservative starting grade B. This surface: relay-only via BleepingComputer (Bill Toulas); CSA advisory primary NOT directly retrieved (awaiting_direct_retrieval preserved as a separate collection todo, not a grade blocker). Note per finding-2026-07-10-0003 grading: CSA's evidence basis independent of Sysdig is UNCONFIRMED from the relay — treated as a second institutional attestation strengthening the exploitation claim within 'likely', NOT a confirmed-independent second evidence basis; direct retrieval of the CSA advisory establishing its own national telemetry would be a WEP-moving development. Operator may ratify at B, upgrade toward A on subsequent surfaces showing verifiable independent technical content, or downgrade if advisories prove low-fidelity. Pending human ratification per source-grade-log.md."
+    awaiting_ratification: true
+    awaiting_direct_retrieval: true
+    provenance: finding-2026-07-10-0003
+    active: true
+    urls:
+      - https://www.csa.gov.sg/
+
+  - id: cert-ua
+    name: "CERT-UA (Computer Emergency Response Team of Ukraine)"
+    category: government
+    grade: A
+    provisional: true
+    provisional_since: 2026-07-16
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-07-16-0003 (Sandworm / APT44 / GRU Unit 74455 shift to ClickFix fake-CAPTCHA -> pasted-PowerShell delivery of a new malware set — GhettoVibe / ScoutCurl / FluidLeech / LoadLoop — against primarily Ukrainian targets). CERT-UA is Ukraine's national CERT and the authoritative primary on Sandworm/GRU Ukraine-theater operations — CISA-analog / national-cyber-authority class, which the corpus grades A on originator authority (per the CISA / NSA-CNSA precedent). Grade anchored at A on national-CERT authority; conservative alternative FLOOR is B, consistent with the first-surface provisional-B starting point applied to foreign national cyber/CERT bodies ABW (2026-05-08), CCB (2026-06-01), CCCS (2026-07-06), Singapore CSA (2026-07-10). Operator may ratify at A, hold at the conservative B floor, or downgrade on subsequent low-fidelity surfaces. This surface: relay-only via The Record (the-record, ratified B); the CERT-UA advisory primary was NOT directly retrieved — atomic IOCs (domains / hashes / PowerShell command detail) are absent from the relay and are the specific target of the direct-retrieval todo. Pending human ratification per source-grade-log.md. 72h ratification clock to 2026-07-19T16:00:00-04:00."
+    awaiting_ratification: true
+    awaiting_direct_retrieval: true
+    ratification_clock: 2026-07-19T16:00:00-04:00
+    provenance: finding-2026-07-16-0003
+    active: true
+    urls:
+      - https://cert.gov.ua/
+
+# ============================================================================
+# Tier-1 Threat Intel Firms
+# ============================================================================
+vendor_sources:
+  - id: mandiant
+    name: "Mandiant / Google Threat Intel"
+    category: vendor
+    grade: A
+    active: true
+    rationale: "Industry gold standard, APT tracking, rigorous attribution"
+    urls:
+      - https://www.mandiant.com/resources/blog
+      - https://cloud.google.com/blog/topics/threat-intelligence
+  
+  - id: crowdstrike
+    name: "CrowdStrike"
+    category: vendor
+    grade: A
+    active: true
+    rationale: "Excellent APT naming/tracking, Global Threat Report"
+    urls:
+      - https://www.crowdstrike.com/blog/
+  
+  - id: recorded-future
+    name: "Recorded Future"
+    category: vendor
+    grade: A
+    active: true
+    rationale: "Deep OSINT + dark web coverage, high accuracy"
+    urls:
+      - https://www.recordedfuture.com/blog
+  
+  - id: mstic
+    name: "Microsoft MSTIC / MSRC"
+    category: vendor
+    grade: A
+    active: true
+    rationale: "Nation-state tracking, Defender telemetry-backed"
+    urls:
+      - https://www.microsoft.com/en-us/security/blog/threat-intelligence/
+      - https://msrc.microsoft.com/blog/
+  
+  - id: unit42
+    name: "Palo Alto Unit 42"
+    category: vendor
+    grade: A
+    active: true
+    rationale: "Strong technical research, consistent track record"
+    urls:
+      - https://unit42.paloaltonetworks.com/
+  
+  - id: sans-isc
+    name: "SANS Internet Storm Center"
+    category: vendor
+    grade: B
+    active: true
+    rationale: "Quality research but community-contributed"
+    urls:
+      - https://isc.sans.edu/
+
+  - id: rapid7
+    name: "Rapid7 (Labs / IR blog)"
+    category: vendor
+    grade: A
+    provisional: true
+    provisional_since: 2026-05-06
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-06-FLASH-0002 (MuddyWater attribution at moderate confidence). Pending human ratification per source-grade-log.md 2026-05-06 entry. Tier-1 IR practice, peer-reviewed publications."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://www.rapid7.com/blog/
+
+  - id: sentinelone
+    name: "SentinelOne / SentinelLabs"
+    category: vendor
+    grade: A
+    provisional: true
+    provisional_since: 2026-05-08
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-08-0003 (PCPJack worm research; sole primary on credential-stealer / TeamPCP-displacement attribution). Tier-1 vendor research peer (Mandiant / CrowdStrike / Unit 42 / MSTIC tier). SentinelLabs publishes peer-reviewed APT and malware research with named analyst bylines. Pending human ratification."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://www.sentinelone.com/labs/
+      - https://www.sentinelone.com/blog/
+
+  - id: proofpoint
+    name: "Proofpoint (Threat Research)"
+    category: vendor
+    grade: A
+    provisional: true
+    provisional_since: 2026-07-08
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-07-08-0001 (UNK_MassTraction Roundcube-webmail exploitation espionage vs U.S./Canadian academic + national-security research networks; sole effective primary on the campaign + LOW-confidence China-aligned attribution). Proofpoint Threat Research is a Tier-1 email-security / threat-intel vendor with a long-running, well-regarded actor-tracking practice (UNK_/TA# designation convention) — peer to Mandiant / CrowdStrike / Unit 42 / MSTIC / SentinelLabs. Provisional A assigned per the SentinelLabs precedent (2026-05-08) for Tier-1 vendor-research first surfaces. Claim reached Archimedes via BleepingComputer (B, Bill Toulas) relay; Proofpoint primary NOT directly retrieved this sweep. Operator may ratify at A or downgrade. Pending human ratification."
+    awaiting_ratification: true
+    awaiting_direct_retrieval: true
+    provenance: finding-2026-07-08-0001
+    active: true
+    urls:
+      - https://www.proofpoint.com/us/blog/threat-insight
+
+  - id: seqrite-labs
+    name: "Seqrite Labs (Quick Heal)"
+    category: vendor
+    grade: C
+    provisional: true
+    provisional_since: 2026-05-08
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-08-0010 (Operation Silent Rotor — Rust malware vs Eurasian UAV sector; sole primary, SecurityWeek In Other News column relay). Tier-2 AV/EDR research firm (Indian-origin; Quick Heal parent). Technical depth-rich primary on this finding (named C2 domain + IPv4 set + SHA-256 hashes + lure-document analysis + AS attribution). No prior Archimedes-corpus track record to assess; provisional C is conservative starting grade per the same precedent as LayerX (2026-05-08). Operator may upgrade to B if subsequent findings show consistent technical rigor and accuracy, or hold at C if context-thin commercial-research profile is observed across more findings. The campaign-attribution restraint Seqrite displayed on Silent Rotor (explicitly NOT attributing to a tracked actor) is a positive methodological signal."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://www.seqrite.com/blog/
+
+  - id: trendyol-group-albayrak
+    name: "Trendyol Group / Berk Albayrak"
+    category: vendor
+    grade: C
+    provisional: true
+    provisional_since: 2026-05-10
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-10-0001 (MacSync macOS infostealer via Google Ads malvertising + Anthropic claude.ai/share/... shared-chat URL abuse; sole primary, BleepingComputer relay by Ax Sharma). Originating researcher Berk Albayrak is a security engineer at Trendyol Group (Turkey's largest e-commerce platform). Legitimate corporate security organization with a real security team — NOT an anonymous source (rules out F) — but NOT a Tier-1 vendor research practice with peer-reviewed APT/malware track record (rules out A/B). No prior Archimedes-corpus citations; no peer-reviewed APT or malware research history visible at first surface. Provisional C is the conservative starting grade per the same precedent as LayerX (2026-05-08) and Seqrite Labs (2026-05-08). Methodological positive on first surface: source makes NO threat-actor attribution and explicitly hedges the 'MacSync' family designation as researcher-coined working name (campaign-attribution restraint). Operator may upgrade to B if subsequent findings show consistent technical rigor and accuracy, or hold at C if context-thin commercial-research profile is observed across more findings."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://www.trendyol.com/
+
+  - id: wiz-research
+    name: "Wiz Research"
+    category: vendor
+    grade: A
+    provisional: true
+    provisional_since: 2026-05-12
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-12-FLASH-0001 (Mini Shai-Hulud npm + PyPI worm; co-primary on TeamPCP high-confidence attribution + IOC publication + lineage analysis). Tier-1 cloud-security research practice with named-research-team bylines, peer-reviewed publications, established methodology. Recent track record on supply-chain attack analysis (SAP CAP Mini Shai-Hulud coverage 2026; ongoing npm ecosystem research). Wiz's 'high confidence' attribution language matches the evidentiary standard of Tier-1 vendor research (Mandiant, CrowdStrike, Unit 42 tier). Provisional A consistent with the precedent applied to SentinelOne (2026-05-08 first surface), Sophos / ESET / Dragos (Session 11 ratifications). Pending human ratification per source-grade-log.md 2026-05-12 entry."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://www.wiz.io/blog
+
+  - id: snyk
+    name: "Snyk"
+    category: vendor
+    grade: A
+    provisional: true
+    provisional_since: 2026-05-12
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-12-FLASH-0001 (Mini Shai-Hulud npm + PyPI worm; co-primary with named-analyst byline Stephen Thoemmes). Tier-1 application-security research practice. CVE coordination role (originating CVE-2026-45321 assignment + GHSA-g7cv-rxg3-hmpx publication on this surface). Cross-references peer analyses with discipline (Upwind Security deobfuscation, Unit 42 baseline tracking, StepSecurity attribution citation). AppSec research practice with consistent technical rigor and ecosystem visibility. Provisional A consistent with the precedent applied to SentinelOne (2026-05-08), Sophos / ESET / Dragos (Session 11 ratifications). Pending human ratification per source-grade-log.md 2026-05-12 entry."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://snyk.io/blog/
+
+  - id: stepsecurity
+    name: "StepSecurity"
+    category: vendor
+    grade: B
+    provisional: true
+    provisional_since: 2026-05-12
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-12-FLASH-0001 (Mini Shai-Hulud npm + PyPI worm). CI/CD-security specialist vendor research practice; originating attribution source for TeamPCP on the Mini Shai-Hulud campaign per Wiz + Snyk citations. Narrower technical scope than Tier-1 vendor research but consistent rigor in published analyses. First Archimedes-corpus citation — provisional B is conservative starting grade per Tier-2-vendor-research precedent. Pending human ratification per source-grade-log.md 2026-05-12 entry."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://www.stepsecurity.io/blog
+
+  - id: semgrep
+    name: "Semgrep"
+    category: vendor
+    grade: B
+    provisional: true
+    provisional_since: 2026-05-12
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-12-FLASH-0001 (Mini Shai-Hulud npm + PyPI worm; coordinated supply-chain attack analysis layer). Established code-security vendor with named-engineer bylines and consistent technical rigor. Provisional B is conservative starting grade for first surface in the corpus. Pending human ratification per source-grade-log.md 2026-05-12 entry."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://semgrep.dev/blog
+
+  - id: onapsis
+    name: "Onapsis"
+    category: vendor
+    grade: B
+    provisional: true
+    provisional_since: 2026-05-12
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-12-FLASH-0001 (Mini Shai-Hulud lineage context). SAP-security specialist with published earlier 2026 SAP CAP Mini Shai-Hulud coverage feeding the Shai-Hulud-family attribution lineage. Named-vendor research. Tier-2 specialist scope. Provisional B is conservative starting grade for first surface in the corpus. Pending human ratification per source-grade-log.md 2026-05-12 entry."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://onapsis.com/blog/
+
+  - id: aikido-security
+    name: "Aikido Security"
+    category: vendor
+    grade: C
+    provisional: true
+    provisional_since: 2026-05-12
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-12-FLASH-0001 (Mini Shai-Hulud npm + PyPI worm; cluster-corroboration layer). Application-security vendor research; first surface in the Archimedes corpus. Provisional C per LayerX / Seqrite / Trendyol / Albayrak precedent — conservative starting grade for vendor-research firms without prior corpus track record. Operator may upgrade to B if subsequent findings show consistent technical rigor and accuracy. Pending human ratification per source-grade-log.md 2026-05-12 entry."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://www.aikido.dev/blog
+
+  - id: bitdefender
+    name: "Bitdefender Labs"
+    category: vendor
+    grade: A
+    provisional: true
+    provisional_since: 2026-05-13
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-13-FLASH-0001 (FamousSparrow attribution at moderate-to-high confidence on Azerbaijani oil & gas three-wave Exchange intrusion December 2025 → February 2026; sole primary, The Hacker News + Dark Reading relays). Tier-1 vendor research practice with named-analyst bylines (Victor Vrabie + Martin Zugec), first-party EDR telemetry, IntelliZone intelligence platform with curated IOC distribution, and prior peer-reviewed APT research track record (2023-2024 FamousSparrow → Salt Typhoon attribution work with ESET + Microsoft cross-corroboration). Moderate-to-high confidence attribution language matches the evidentiary standard of Mandiant / CrowdStrike / Unit 42 / MSTIC tier. Provisional A consistent with the precedent applied to SentinelOne (2026-05-08), Wiz Research + Snyk (2026-05-12), Sophos / ESET / Dragos (Session 11 ratifications). Pending human ratification per source-grade-log.md 2026-05-13 entry."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://businessinsights.bitdefender.com/
+      - https://www.bitdefender.com/blog/labs/
+
+  - id: symantec
+    name: "Symantec (Threat Hunter Team / Carbon Black)"
+    category: vendor
+    grade: A
+    provisional: true
+    provisional_since: 2026-05-13
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-13-FLASH-1800-0001 (Symantec attributes Q1 2026 multi-victim espionage campaign to MuddyWater / Seedworm — South Korean electronics maker case study + 8 additional victims across MENA gov/aviation + SEA industrial + LatAm financial + global education; new ChromElevator credential-theft malware + two novel DLL sideloading pairs Fortemedia fmapp + SentinelOne sentinelmemoryscanner + Node.js orchestration + sendit.sh exfil). Sole originating primary; BleepingComputer (Bill Toulas 17:59 EDT in-window), Industrial Cyber, and The Hacker News are pure relays (single-source veto applied at grader / WEP capped at 'likely'). Tier-1 vendor research practice — Symantec Threat Hunter Team + Carbon Black joint byline, Broadcom-owned, first-party EDR telemetry (SEP + Carbon Black), long-running Seedworm taxonomy primacy since 2018 (MITRE G0069 attribution lineage). Symantec's own attribution language is softer than formal moderate/high confidence ('widely believed to be linked' to Iran MOIS) — hedge preserved verbatim per Hard Rule 2. Provisional A consistent with the precedent applied to SentinelOne (2026-05-08 first surface), Wiz Research + Snyk (2026-05-12), Bitdefender (2026-05-13 14:30), Sophos / ESET / Dragos (Session 11 ratifications). SECOND provisional-A first-citation on 2026-05-13 (Bitdefender at 14:30 was the first). Pending human ratification per source-grade-log.md 2026-05-13 entry. 72h ratification clock to 2026-05-16T18:25:00-04:00."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://www.security.com/threat-intelligence
+      - https://symantec-enterprise-blogs.security.com/threat-intelligence
+
+  - id: safedep
+    name: "SafeDep"
+    category: vendor
+    grade: C
+    provisional: true
+    provisional_since: 2026-05-12
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-12-FLASH-0001 (Mini Shai-Hulud npm + PyPI worm; cluster-corroboration layer). First-surface npm security vendor with no prior Archimedes-corpus track record. Provisional C per same precedent as Aikido above (LayerX / Seqrite / Trendyol / Albayrak conservative starting grade for unknown vendor-research firms). Operator may upgrade to B if subsequent findings show consistent technical rigor and accuracy. Pending human ratification per source-grade-log.md 2026-05-12 entry."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://safedep.io/blog
+
+  - id: sophos
+    name: "Sophos / Sophos X-Ops"
+    category: vendor
+    grade: A
+    active: true
+    rationale: "Tier-1 vendor research practice. SophosLabs / X-Ops publish peer-reviewed APT and malware research with first-party EDR telemetry and named-analyst bylines. Ratified Session 11 (2026-05-07) per finding-2026-05-07-0003 librarian handoff — originating research on PCJack worm cluster, cited via BleepingComputer relay."
+    ratified_at: 2026-05-07
+    urls:
+      - https://news.sophos.com/
+
+  - id: eset
+    name: "ESET / WeLiveSecurity"
+    category: vendor
+    grade: A
+    active: true
+    rationale: "Tier-1 vendor research practice. ESET research publishes named-analyst-byline APT and malware analysis with first-party EDR telemetry; long track record on East Asian and Eastern European APT clusters. Ratified Session 11 (2026-05-07) per finding-2026-05-07-0004 librarian handoff — originating research on APT37 Birdcall Android (Filip Jurčacko), cited via The Record relay."
+    ratified_at: 2026-05-07
+    urls:
+      - https://www.welivesecurity.com/
+
+  - id: dragos
+    name: "Dragos"
+    category: vendor
+    grade: A
+    active: true
+    rationale: "Tier-1 ICS/OT research practice with first-party industrial-environment telemetry. Named-analyst bylines, peer-reviewed publication, OT-focused customer base providing visibility no IT-only vendor matches. Ratified Session 11 (2026-05-07) per finding-2026-05-07-0006 librarian handoff — Mexican water OT intrusion / TAT26-12 Claude AI tradecraft research, cited via SecurityWeek relay."
+    ratified_at: 2026-05-07
+    urls:
+      - https://www.dragos.com/blog/
+
+  - id: f5
+    name: "F5 (PSIRT / K-articles / NGINX advisories)"
+    category: vendor
+    grade: A
+    provisional: true
+    provisional_since: 2026-05-14
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-14-0002 as vendor self-disclosure for K000160932 quarterly advisory (50+ CVEs headlined by CVE-2026-42945 'NGINX Rift' — heap overflow in rewrite module, CVSS v4 9.2, pre-auth RCE ASLR-dependent / DoS otherwise; cohort: CVE-2026-41225 iControl REST privesc + CVE-2026-41957 / 34176 / 39459 BIG-IP authenticated-RCE family). Vendor-self-disclosure on own products is procedurally A-grade per same precedent as Palo Alto PSIRT, Cisco PSIRT, Microsoft MSRC, kernel.org netdev. F5 published K-article series with named-product-version patch matrix, named NGINX maintainer credit, explicit no-in-the-wild-exploitation framing, and explicit ASLR-dependency caveat. Pending human ratification."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://my.f5.com/manage/s/article/K000160932
+      - https://my.f5.com/manage/s/article-search-product
+
+  - id: kernel-org-netdev
+    name: "kernel.org netdev mailing list"
+    category: vendor
+    grade: A
+    provisional: true
+    provisional_since: 2026-05-14
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-14-0003 (Fragnesia CVE-2026-46300 XFRM ESP-in-TCP page-cache-corruption kernel patch posted to netdev 2026-05-13; distros rolling). Vendor-self-disclosure on own product is procedurally A-grade per same precedent as F5, Palo Alto PSIRT, Cisco PSIRT, Microsoft MSRC. kernel.org / Linux netdev is the authoritative upstream maintainer publication channel for the Linux kernel — patches are the canonical fact-of-vulnerability source. Pending human ratification."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://lore.kernel.org/netdev/
+      - https://www.kernel.org/
+
+  - id: sysdig
+    name: "Sysdig Threat Research Team"
+    category: vendor
+    grade: B
+    provisional: true
+    provisional_since: 2026-05-14
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-14-0004 (PraisonAI CVE-2026-44338 mass-scanner traffic detected 3h44m post-disclosure; UA `CVE-Detector/1.0`; characterized as 'scanner, not interactive exploitation' — hedge preserved verbatim per Hard Rule 2). Sysdig Threat Research Team has Falco-pedigree (CNCF runtime-security project) and named-analyst-byline cloud-native security research. Conservative provisional B starting grade for unknown-to-corpus vendor research practice per same precedent as SecurityWeek (2026-05-06), LayerX (2026-05-08), Trendyol-Albayrak (2026-05-10). Positive methodological signal on first surface: explicit scanner-vs-exploitation hedge, named UA fingerprint, named patched-version, and explicit `agents.yaml`-as-bounded-impact framing. Operator may upgrade to A on subsequent surfaces showing consistent first-party-telemetry-backed rigor. Pending human ratification."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://sysdig.com/blog/
+      - https://www.falco.org/blog/
+
+  - id: zellic
+    name: "Zellic (William Bowling)"
+    category: vendor
+    grade: B
+    provisional: true
+    provisional_since: 2026-05-14
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-14-0003 (Fragnesia CVE-2026-46300 PoC publishing — Zellic / William Bowling working PoC corrupting `/usr/bin/su` page cache to root shell). Zellic is a security-research / audit firm; William Bowling is a named-byline researcher with prior public kernel-LPE / browser-exploit track record (vendor-acknowledged across multiple Pwn2Own + browser-vendor security bulletins). Conservative provisional B starting grade for unknown-to-corpus vendor-research firm per same precedent as SecurityWeek, LayerX, Trendyol-Albayrak, Sysdig. Positive methodological signal on first surface: PoC published with named researcher, vendor-coordinated disclosure timing (post-kernel-patch), explicit primitive description in BleepingComputer relay. Operator may upgrade to A on subsequent surfaces showing consistent first-party-research rigor. Pending human ratification."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://www.zellic.io/blog/
+
+  - id: cisco-talos
+    name: "Cisco Talos"
+    category: vendor
+    grade: A
+    provisional: true
+    provisional_since: 2026-05-14
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-14-0005 (CVE-2026-20182 Cisco Catalyst SD-WAN auth bypass, CVSS 10.0, CISA KEV 3-day federal deadline; sole originating primary on UAT-8616 'high confidence' active-exploitation attribution since 2023 against the same product family — prior CVE-2026-20127). Tier-1 vendor research practice — Cisco Talos publishes peer-reviewed APT and malware research with first-party telemetry (ThreatGrid + Umbrella + Cisco Secure Endpoint), named-analyst bylines, and long-running UAT-* / Talos taxonomy primacy. UAT-8616 attribution language ('high confidence') matches the evidentiary standard of Mandiant / CrowdStrike / Unit 42 / MSTIC tier. Provisional A consistent with the precedent applied to SentinelOne (2026-05-08), Wiz Research + Snyk (2026-05-12), Bitdefender + Symantec (2026-05-13), F5 + kernel-org-netdev (2026-05-14 morning). Red-team caveats C1-C6 preserved verbatim on finding 0005: Talos single-originating-primary on attribution (no Mandiant / MSTIC / CrowdStrike / Unit 42 parallel — single-source veto applied at WEP, capped at 'likely'); SSH-keys + NETCONF + root pattern is Talos-described not UAT-8616-diagnostic (canonical SD-WAN-controller compromise shape); 10 published IOCs are for EARLIER CVE-2026-20133/20128/20122 cohort, NOT UAT-8616 indicators. Pending human ratification."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://blog.talosintelligence.com/
+
+  - id: cisco-psirt
+    name: "Cisco PSIRT (Product Security Incident Response Team)"
+    category: vendor
+    grade: A
+    provisional: true
+    provisional_since: 2026-05-20
+    provisional_reason: "First Archimedes-corpus citation of Cisco PSIRT as a *dedicated* source-grades.yaml id via finding-2026-05-20-0006 (CVE-2026-20223 Cisco Secure Workload pre-auth REST API authentication bypass, CVSS 10.0, CWE-306 missing authentication, cross-tenant scope-CHANGED, fixed in on-prem 3.10.8.3 + 4.0.3.17, SaaS already mitigated, no workarounds; advisory cisco-sa-csw-pnbsa-g8WEnuy). Cisco PSIRT is the canonical vendor authority on Cisco-product CVE disclosure — advisory text, CWE classification, affected/fixed version matrices, SaaS mitigation status, workaround availability, and explicit no-public-exploitation attestations are all first-party vendor-on-own-product authoritative claims. Vendor-self-disclosure on own products is procedurally A-grade per the precedent already established for F5 PSIRT (2026-05-14-0002 K000160932 NGINX Rift), kernel.org netdev maintainer disclosure (2026-05-14-0003 Fragnesia), OpenAI self-disclosure (2026-05-14-0008 TanStack), GitHub self-disclosure (2026-05-20-FLASH-0001). Cisco PSIRT is distinct from Cisco Talos (cisco-talos id provisional A since 2026-05-14): PSIRT publishes advisories on Cisco-product CVEs (vendor-on-own-product authority); Talos publishes threat research on external actors / campaigns / non-Cisco-product CVEs (vendor research-arm authority). Scope of A grade: Cisco-product CVE-disclosure procedural facts (CVE existence, CVSS scoring, CWE mapping, affected/fixed versions, SaaS mitigation, workaround availability, no-ITW attestations). Cisco PSIRT does NOT publish attribution claims — Hard Rule 2 preserved on finding 0006 ('not aware of any public announcements or malicious use' is procedural, not attributive). Pending human ratification."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://sec.cloudapps.cisco.com/security/center/publicationListing.x
+      - https://tools.cisco.com/security/center/publicationListing.x
+
+  - id: darktrace
+    name: "Darktrace"
+    category: vendor
+    grade: A
+    provisional: true
+    provisional_since: 2026-05-14
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-14-0007 (Twill Typhoon / Mustang Panda / TA416 APAC + Japan financial-and-unspecified-victim campaign Sept 2025 → Apr 2026, new FDMTP modular .NET RAT; sole originating primary in the same SecurityWeek aggregation that carry-forwarded Salt Typhoon Azerbaijan). Tier-1 vendor research practice — Darktrace AI Research Centre publishes peer-reviewed campaign analyses with first-party telemetry from Darktrace Cyber AI platform deployments, named-analyst bylines, and prior East-Asian APT cluster tracking track record. Provisional A consistent with the precedent applied to SentinelOne (2026-05-08), Wiz Research + Snyk (2026-05-12), Bitdefender + Symantec (2026-05-13), Cisco Talos (2026-05-14 afternoon). Red-team caveats preserved on finding 0007: Darktrace single-source on Twill Typhoon attribution (WEP capped at 'likely'); financial targeting is an outlier vs. Mustang Panda's historical NGO / journalist / governmental profile (per Mandiant / ESET / Trend Micro baseline tracking) — the alias-cluster Twill = Mustang Panda is per Darktrace, retain mention of the outlier-targeting deviation as cluster-mapping caveat. Pending human ratification."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://darktrace.com/blog
+
+  - id: socket
+    name: "Socket"
+    category: vendor
+    grade: B
+    provisional: true
+    provisional_since: 2026-05-14
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-14-0009 (node-ipc npm — 3 backdoored versions 9.1.6 / 9.2.3 / 12.0.1 by no-history `atiertant` account; ~90 credential-category stealer exfil via HTTPS-POST + DNS-TXT to sh.azurestaticprovider[.]net; UNATTRIBUTED). Co-originating primary with StepSecurity (provisional B). Socket is an npm-supply-chain-security specialist vendor publishing first-party static-analysis + behavioral-analysis research on malicious package surfacings. Tier-2 npm-security-specialist scope — narrower than Tier-1 vendor research practices (Mandiant / CrowdStrike / Unit 42 / MSTIC tier) but consistent technical rigor and supply-chain-attack visibility no IT-only vendor matches. Provisional B is conservative starting grade per same precedent as StepSecurity (2026-05-12), SafeDep (2026-05-12), Semgrep (2026-05-12), Aikido (2026-05-12), Sysdig (2026-05-14), Zellic (2026-05-14). Strong methodological signal on first surface: Socket + StepSecurity explicitly decline TeamPCP / Shai-Hulud / Mini Shai-Hulud attribution despite operational adjacency — Hard Rule 2 compliance (mechanism, scope, ecosystem, and C2 all differ from Mini Shai-Hulud). Operator may upgrade to A on subsequent surfaces showing consistent rigor across additional npm-supply-chain investigations. Pending human ratification."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://socket.dev/blog
+
+  - id: openai-self-disclosure
+    name: "OpenAI (self-disclosure / security communications)"
+    category: vendor
+    grade: A
+    provisional: true
+    provisional_since: 2026-05-14
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-14-0008 (OpenAI confirms TanStack supply-chain breach affecting 2 employee devices; multi-platform code-signing-cert rotation across macOS / Windows / iOS / Android; macOS app version-update deadline 2026-06-12; bounded scope: no customer data, no production, no IP, no deployed software affected). Named-victim-self-disclosure class — vendor publishing security communications about a breach affecting its own organization. Provisional A is procedurally consistent with the same precedent class as Cisco PSIRT, Microsoft MSRC, F5 K-articles (provisional A 2026-05-14 morning), kernel.org netdev (provisional A 2026-05-14 morning), Palo Alto PSIRT — first-party named-victim disclosure on own incident is procedurally A-grade because the disclosing entity has direct ground-truth visibility into the facts being claimed. OpenAI's TanStack-breach communications include named scope-bounding claims (2 employee devices, no customer / production / IP impact), explicit multi-platform cert-rotation cadence (30-day window), and named deadline (2026-06-12 macOS app). Operational template framing per analyst SAT-ACH on finding 0008: this is the first named-enterprise victim on the Mini Shai-Hulud (VT-006 / CVE-2026-45321 / TeamPCP) campaign; the 2-devices → cert-key-exfil → multi-platform-rotation pattern is the operational template an A&D-prime victim disclosure would follow if @squawk aviation-namespace dependencies reach Tier-1 SDLCs. Archimedes does not extrapolate A&D-prime exposure from this single named-victim disclosure (Hard Rule 2). Pending human ratification."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://openai.com/security
+
+  - id: ox-security
+    name: "Ox Security"
+    category: vendor
+    grade: B
+    provisional: true
+    provisional_since: 2026-05-15
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-15-0005 (node-ipc compromise four-firm UNATTRIBUTED consensus — Socket + StepSecurity + Ox Security + Upwind all decline TeamPCP / Shai-Hulud / Mini Shai-Hulud lineage). Cited via BleepingComputer relay; primary not yet directly retrieved by Archimedes collector — provisional grade is from relay-layer citation only, mark for direct-retrieval verification on next collector pass. Ox Security is an application-security / supply-chain-security vendor with named published research on npm and software-supply-chain attacks. Tier-2 supply-chain-security specialist scope — consistent with the provisional-B grade applied to Socket (2026-05-14, also first-cited on the node-ipc cluster) and StepSecurity (2026-05-12). Strong methodological signal on this surface: explicitly declines TeamPCP / Shai-Hulud / Mini Shai-Hulud attribution despite operational adjacency, consistent with the other three firms in the four-firm consensus — Hard Rule 2 compliant (mechanism, scope, ecosystem, and C2 all differ from Mini Shai-Hulud). Provisional B is conservative starting grade for first surface in the corpus. Operator may upgrade to A on subsequent surfaces showing consistent rigor across additional supply-chain investigations, or hold at B if relay-only citation pattern persists. Pending direct retrieval and human ratification."
+    awaiting_ratification: true
+    awaiting_direct_retrieval: true
+    active: true
+    urls:
+      - https://www.ox.security/blog/
+
+  - id: upwind
+    name: "Upwind"
+    category: vendor
+    grade: B
+    provisional: true
+    provisional_since: 2026-05-15
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-15-0005 (node-ipc compromise four-firm UNATTRIBUTED consensus — Socket + StepSecurity + Ox Security + Upwind all decline TeamPCP / Shai-Hulud / Mini Shai-Hulud lineage). Cited via BleepingComputer relay; primary not yet directly retrieved by Archimedes collector — provisional grade is from relay-layer citation only, mark for direct-retrieval verification on next collector pass. Upwind is a cloud-native / runtime-security vendor with prior corpus-adjacent visibility via Snyk's Mini Shai-Hulud cross-reference (finding-2026-05-12-FLASH-0001 explicitly cited Upwind Security deobfuscation work) — this is the first surface where Upwind appears as a directly-cited source rather than a Snyk-referenced peer. Tier-2 supply-chain / runtime-security specialist scope — consistent with the provisional-B grade applied to Socket (2026-05-14), StepSecurity (2026-05-12), and Ox Security (this surface). Strong methodological signal on this surface: explicitly declines TeamPCP / Shai-Hulud / Mini Shai-Hulud attribution despite operational adjacency, consistent with the other three firms — Hard Rule 2 compliant. Provisional B is conservative starting grade for first directly-cited surface in the corpus. Operator may upgrade to A on subsequent surfaces showing consistent rigor across additional supply-chain investigations, or hold at B if relay-only citation pattern persists. Pending direct retrieval and human ratification."
+    awaiting_ratification: true
+    awaiting_direct_retrieval: true
+    active: true
+    urls:
+      - https://www.upwind.io/feed
+
+  - id: github-blog-self-disclosure
+    name: "GitHub (self-disclosure / security communications via github.blog)"
+    category: vendor
+    grade: A
+    provisional: true
+    provisional_since: 2026-05-20
+    provisional_reason: "First Archimedes-corpus citation of GitHub self-disclosure on its own incident — same vendor-authority-on-own-incident class as f5 / openai-self-disclosure / kernel-org-netdev / nx-team-nrwl precedent. First cited via finding-2026-05-20-FLASH-0001 (GitHub confirms breach of approximately 3,800 internal repositories via employee device compromise from a poisoned VS Code marketplace extension; customer data assessed as no evidence of impact). GitHub blog primary URL not directly retrieved this sweep — finding sources the disclosure via three independent B-grade media relays (BleepingComputer Sergiu Gatlan, The Hacker News, SecurityWeek Ionut Arghire). Provisional A is procedurally consistent with the same precedent class as Cisco PSIRT, Microsoft MSRC, F5 K-articles, kernel.org netdev, OpenAI security communications, Nx Team Nrwl — first-party named-victim disclosure on own incident is procedurally A-grade because the disclosing entity has direct ground-truth visibility into the facts being claimed. GitHub's 2026-05-20 communications include named scope-bounding claims (~3,800 internal repositories, no evidence of customer-data impact), explicit incident-confirmation language ('detected and contained a compromise'), and notably softer-than-confirmation framing on the actor-attribution layer ('directionally consistent with our investigation' on the TeamPCP self-claim) that the grader preserved verbatim per Hard Rule 2. The softer-language framing is itself a quality signal — GitHub is exercising standard incident-response disclosure discipline (vendor-confirms-procedural-facts; declines to upgrade self-attribution beyond what their own investigation has independently established). Pending direct-retrieval verification of github.blog primary URL on next collector pass. Ratification clock: 72h from commit (2026-05-23T06:08:00-04:00). Pending human ratification."
+    awaiting_ratification: true
+    awaiting_direct_retrieval: true
+    active: true
+    urls:
+      - https://github.blog/category/security/
+      - https://github.blog/
+
+  - id: litespeed-blog-self-disclosure
+    name: "LiteSpeed Technologies (self-disclosure / security advisories via blog.litespeedtech.com)"
+    category: vendor
+    grade: A
+    provisional: true
+    provisional_since: 2026-05-23
+    provisional_reason: "First Archimedes-corpus citation of LiteSpeed Technologies self-disclosure on its own product — same vendor-authority-on-own-product class as f5 / kernel-org-netdev / cisco-psirt / openai-self-disclosure / github-blog-self-disclosure precedent. First cited via finding-2026-05-23-FLASH-0002 (LiteSpeed advisory 2026-05-21 confirms CVE-2026-48172 in the LiteSpeed User-End cPanel Plugin v2.3 through v2.4.4 via the lsws.redisAble function permitting any cPanel user to execute arbitrary scripts as root; vendor attests active exploitation in the wild; patches shipped v2.4.5 standalone and v2.4.7 bundled in WHM plugin v5.3.1.0; WHM administrative-side counterpart NOT affected). Provisional A is procedurally consistent with the established vendor-self-disclosure-on-own-product precedent class (F5 K000160932, kernel.org netdev, Cisco PSIRT, OpenAI security communications, GitHub blog self-disclosure) — first-party vendor disclosure on own product is procedurally A-grade because the disclosing entity has direct ground-truth visibility into product version matrices, patch deltas, vulnerable function names (lsws.redisAble), and exploitation-in-the-wild observation. LiteSpeed's 2026-05-21 advisory includes named product-version matrix (v2.3-v2.4.4 affected, v2.4.5/v2.4.7 patched), named vulnerable function (lsws.redisAble), explicit scope-bounding (User-End plugin only, WHM-side NOT affected), and vendor first-person exploitation attestation ('actively being exploited'). CVSS 10.0 framing originates with The Hacker News relay rather than the LiteSpeed advisory itself — the vendor advisory does NOT publish a CVSS number. Single-source veto applies on the active-exploitation-in-the-wild layer specifically (vendor-on-own-product attestation but no independent telemetry corroboration — Mandiant, Volexity, Unit 42, GreyNoise, MSTIC silent; CISA KEV not listing as of 2026-05-22 catalog; 12:00 EDT KEV resurface check scheduled). NVD CVE-2026-48172 record not directly retrieved at sweep time — CVSS 10.0 framing pending NVD confirmation. Ratification clock: 72h from commit (2026-05-26T06:35:00-04:00). Pending human ratification."
+    awaiting_ratification: true
+    awaiting_direct_retrieval: false
+    active: true
+    urls:
+      - https://blog.litespeedtech.com/
+      - https://blog.litespeedtech.com/2026/05/21/security-update-for-litespeed-cpanel-plugin/
+
+  - id: zdi-blog
+    name: "Zero Day Initiative (Trend Micro) — ZDI blog / Pwn2Own coordination"
+    category: vendor
+    grade: A
+    provisional: true
+    provisional_since: 2026-05-16
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-16-0002 (Pwn2Own Berlin 2026 Day 3 final results and Master of Pwn — 3 successful exploits / $34,500 payouts Day 3 bringing event total to $943,250 across 42 unique zero-days; Day 2 Orange Tsai / DEVCORE Exchange RCE-to-SYSTEM chain remains under standard 90-day vendor-coordinated-disclosure embargo). ZDI / Trend Micro is the canonical Pwn2Own contest coordinator, judge, and exclusive publisher of contest results, payouts, and embargoed-CVE disclosure coordination since 2007. Dustin Childs (Communications Manager, ZDI) is the named byline with multi-decade track record in vendor coordination and Pwn2Own contest reporting. Provisional A is procedurally consistent with the same precedent class as Bitdefender (2026-05-13), Sysdig (2026-05-14), Wiz Research (2026-05-12), Symantec (2026-05-13), Cisco Talos (2026-05-14 afternoon), Darktrace (2026-05-14), OpenAI self-disclosure (2026-05-14) — first-citation vendor-research / vendor-self-disclosure publications at Tier-1 evidentiary standard. ZDI is procedurally A-grade on contest-mechanical facts (exploit count, payouts, vendor coordination, Master of Pwn standings) because ZDI is the authoritative knowledge-holder for its own contest — there is no higher-quality evidence basis for those specific claim types (analogous to F5 vendor self-disclosure of own-product CVEs in finding-2026-05-14-0002, kernel.org netdev on Linux kernel patches in finding-2026-05-14-0003, OpenAI on own incident in finding-2026-05-14-0008). Single-source veto applies on contest-event layer but does NOT cap WEP because ZDI is vendor-authority on own contest. Pending human ratification."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://www.thezdi.com/blog
+      - https://www.zerodayinitiative.com/blog
+
+  - id: arctic-wolf
+    name: "Arctic Wolf (Labs / IR research)"
+    category: vendor
+    grade: B
+    provisional: true
+    provisional_since: 2026-05-28
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-28-FLASH-1200-0001 (CVE-2026-35616 FortiClient EMS fresh post-patch exploitation observation, May 2026; pre-auth API access bypass to privilege escalation, CVSS 9.1; management-pipeline PowerShell-push mechanism dropping EKZ Infostealer / FortiEndpoint_Patch.exe with exfil to 83.138.53.110; sole originating vendor — SecurityWeek and The Hacker News both relay Arctic Wolf with no independent observations). Arctic Wolf is a Tier-2 vendor IR / security operations firm with named-research-team output and an established managed-detection-and-response practice. Provisional B is the conservative starting grade per the vendor-IR-research-firm category precedent (peer class: StepSecurity B, Socket B, Sysdig B, Zellic B, Ox Security B, Upwind B). Methodological positives on first surface: Arctic Wolf names no actor or nation-state on the campaign (Hard Rule 2 compliant); SecurityWeek and THN both preserve this absence verbatim. Operator may upgrade to A on subsequent surfaces showing consistent technical rigor across additional vendor-IR investigations, particularly if Arctic Wolf telemetry coordinates with Tier-1 vendor research (Mandiant / CrowdStrike / Unit 42 / MSTIC) on shared campaigns; hold at B if context-thin commercial-research profile is observed across more findings. Pending human ratification."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://arcticwolf.com/resources/blog/
+      - https://arcticwolf.com/resources/
+
+  - id: palo-alto-psirt
+    name: "Palo Alto Networks PSIRT (Product Security Incident Response Team)"
+    category: vendor
+    grade: A
+    provisional: true
+    provisional_since: 2026-05-29
+    provisional_reason: "First Archimedes-corpus citation as a *dedicated* source-grades.yaml id via finding-2026-05-29-0004 (CVE-2026-0257 PAN-OS GlobalProtect authentication bypass; CVSS v4 7.8; three-condition coexistence prerequisite — auth-override enabled + Cloud Authentication Service disabled + override-cookie certificate reused; advisory at security.paloaltonetworks.com/CVE-2026-0257; vendor self-attests 'limited exploit attempts on unpatched PAN-OS devices without mitigations applied' verbatim under Hard Rule 6 quote discipline). Palo Alto PSIRT is the canonical vendor authority on PAN-OS-product CVE disclosure — advisory text, CVSS scoring, affected/fixed version matrices (12.1.7 / 11.2.12 / 11.1.15 / 10.2.18-h6 branch rollup), three-condition exploitability prerequisite enumeration, workaround availability (disable auth-override OR dedicated override-cookie certificate), and ITW attestations are all first-party vendor-on-own-product authoritative claims. Vendor-self-disclosure on own products is procedurally A-grade per the precedent already established for Cisco PSIRT (2026-05-20-0006), F5 PSIRT (2026-05-14-0002 K000160932 NGINX Rift), kernel.org netdev maintainer disclosure (2026-05-14-0003 Fragnesia), OpenAI self-disclosure (2026-05-14-0008 TanStack), GitHub self-disclosure (2026-05-20-FLASH-0001), and LiteSpeed self-disclosure (2026-05-23-FLASH-0002). Palo Alto PSIRT is DISTINCT from Palo Alto Unit 42 (already graded A): PSIRT publishes advisories on PAN-OS / Cortex / Prisma product CVEs (vendor-on-own-product authority); Unit 42 publishes threat research on external actors / campaigns / non-Palo-Alto-product CVEs (vendor research-arm authority). The 2026-05-06 source-grade-log entry deferred this dedicated id; finding 0004 forces the issue with PSIRT as a direct co-primary alongside Rapid7 and CISA KEV. Scope of A grade: PAN-OS-product CVE-disclosure procedural facts (CVE existence, CVSS scoring, affected/fixed versions, exploitability prerequisites, workaround availability, vendor ITW attestations). Palo Alto PSIRT does NOT originate actor attribution on this finding — Hard Rule 2 preserved. Pending human ratification."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://security.paloaltonetworks.com/
+      - https://security.paloaltonetworks.com/CVE-2026-0257
+
+  - id: ivanti-psirt
+    name: "Ivanti PSIRT (Product Security Incident Response Team)"
+    category: vendor
+    grade: A
+    provisional: true
+    provisional_since: 2026-06-10
+    provisional_reason: "First Archimedes-corpus citation as a *dedicated* source-grades.yaml id via finding-2026-06-10-0003 (CVE-2026-10520 Ivanti Sentry OS command injection CVSS 10.0 + CVE-2026-10523 auth bypass CVSS 9.9; both pre-auth RCE on enterprise mobile gateway; patched at disclosure 2026-06-09; vendor attests no customer exploitation observed verbatim 'not aware of any customers being exploited' under Hard Rule 6 quote discipline). Ivanti PSIRT is the canonical vendor authority on Ivanti-product CVE disclosure — advisory text, CVSS scoring, CWE classification, affected/fixed version matrices, and ITW attestations on own customer base are all first-party vendor-on-own-product authoritative claims. Vendor-self-disclosure on own products is procedurally A-grade per the precedent already established for F5 PSIRT (2026-05-14-0002 K000160932 NGINX Rift), Cisco PSIRT (2026-05-20-0006), kernel.org netdev maintainer disclosure (2026-05-14-0003 Fragnesia), OpenAI self-disclosure (2026-05-14-0008 TanStack), GitHub self-disclosure (2026-05-20-FLASH-0001), LiteSpeed self-disclosure (2026-05-23-FLASH-0002), Palo Alto PSIRT (2026-05-29-0004). Cross-corpus prior: Ivanti has been cited in Archimedes corpus on prior CVE-2026-6973 Ivanti EPMM KEV (2026-05-07 federal deadline) but as a relayed-source via media primaries; this is the first dedicated source-grades.yaml id for Ivanti PSIRT itself. Scope of A grade: Ivanti-product CVE-disclosure procedural facts (CVE existence, CVSS scoring, CWE mapping, affected/fixed versions, workaround availability, vendor ITW attestations on own customer base). Ivanti PSIRT does NOT originate actor attribution on this finding — Hard Rule 2 preserved. Single-source veto applies on vendor-sole no-customer-exploitation attestation layer (vendor sole source on own customer base). Pending human ratification."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://forums.ivanti.com/s/security-advisories
+      - https://www.ivanti.com/blog
+
+  - id: arista-networks-psirt
+    name: "Arista Networks PSIRT (Product Security Incident Response Team)"
+    category: vendor
+    grade: A
+    provisional: true
+    provisional_since: 2026-06-10
+    provisional_reason: "First Archimedes-corpus citation as a *dedicated* source-grades.yaml id via finding-2026-06-10-0004 (Arista EOS CVE-2026-7473 'Incomplete Comparison with Missing Factors' CVSS 6.9 added to CISA KEV 2026-06-09 with federal deadline 2026-06-23 — UNUSUAL DISPOSITION: vendor refuses to ship a patch and provides mitigation instructions instead — first-of-its-kind in corpus; vendor cites risk of breaking customer configurations; vendor attests ITW exploitation; CISA's required action collapses to 'apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable'). Arista PSIRT is the canonical vendor authority on Arista-product (EOS / 7020R / 7280R-R2 / 7500R-R2 / 7800R3 / R3-series IPv6 decap) CVE disclosure — advisory text, affected platform matrices, mitigation instructions, and 'no software upgrade path is planned' vendor-policy attestation are all first-party vendor-on-own-product authoritative claims. Vendor-self-disclosure on own products is procedurally A-grade per the precedent already established for F5 PSIRT (2026-05-14-0002), Cisco PSIRT (2026-05-20-0006), kernel.org netdev (2026-05-14-0003), OpenAI / GitHub / LiteSpeed self-disclosure, Palo Alto PSIRT (2026-05-29-0004), Ivanti PSIRT (2026-06-10-0003 — paired same-day precedent). Special-precedent note: this is the FIRST corpus instance of a vendor explicitly declining to ship a patch on a KEV-listed CVE; the procedural A grade applies to the FACTS of the advisory + policy decision (vendor IS the authority on its own no-patch policy); does NOT extend to any third-party claim about whether the no-patch posture is defensible. No Tier-1 IR firm has corroborated Arista's ITW attestation at this hour — single-source veto applies on the ITW layer (vendor-attested only). Scope of A grade: Arista-product CVE-disclosure procedural facts (CVE existence, affected platforms, mitigation availability/instructions, vendor-policy attestations, vendor ITW attestations). Arista PSIRT does NOT originate actor attribution on this finding — Hard Rule 2 preserved. Pending human ratification."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://www.arista.com/en/support/advisories-notices
+
+  - id: push-security
+    name: "Push Security"
+    category: vendor
+    grade: B
+    provisional: true
+    provisional_since: 2026-05-29
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-29-0005 (LLMShare malvertising campaign; chatgpt.com/s/ shared-link URL abuse → fake OpenAI outage page → openew[.]app fake ChatGPT desktop-app downloads with macOS + Windows samples and VirusTotal-corroborated SHA-256 hashes; co-primary with Permiso Security on the paired ChatGPhish disclosure though no IOCs overlap between the two arms). Cited via BleepingComputer (Bill Toulas) as the originating research vendor; primary research surface is pushsecurity.com/blog with named-engineer bylines. Push Security is a SaaS-identity / browser-security specialist vendor — narrower Tier-2 scope than Tier-1 vendor research practices (Mandiant / CrowdStrike / Unit 42 / MSTIC) but consistent technical rigor on SaaS-platform-abuse research with VirusTotal-corroborated sample analysis. Provisional B is the conservative starting grade per the vendor-research-firm category precedent (peer class: StepSecurity B, Socket B, Sysdig B, Zellic B, Ox Security B, Upwind B, Arctic Wolf B). Methodological positives on first surface: Push Security names no actor and explicitly hedges payload identification ('unclear what payloads are ultimately deployed' — 7-word verbatim quote preserved under Hard Rule 6), Hard Rule 2 compliance preserved verbatim by BleepingComputer relay. Operator may upgrade to A on subsequent surfaces showing consistent rigor across additional SaaS-identity / browser-security investigations; hold at B if context-thin commercial-research profile emerges across more findings. Pending human ratification."
+    awaiting_ratification: true
+    awaiting_direct_retrieval: true
+    active: true
+    urls:
+      - https://pushsecurity.com/blog
+      - https://pushsecurity.com/research
+
+  - id: permiso-security
+    name: "Permiso Security"
+    category: vendor
+    grade: B
+    provisional: true
+    provisional_since: 2026-05-29
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-29-0005 (ChatGPhish vulnerability class — ChatGPT response renderer trusts Markdown links and images from summarized third-party pages, enabling auto-image-fetch IP / User-Agent / Referer leakage, clickable malicious links, and fake system-style alerts in the trusted ChatGPT interface; co-primary with Push Security on the paired LLMShare disclosure though no IOCs overlap between the two arms — Permiso's disclosure is a vulnerability-class report with no published IOCs). Cited via The Hacker News (Ravie Lakshmanan) as the originating research vendor; primary research surface is permiso.io with named-research-team output. Permiso Security is a cloud-identity / cloud-detection specialist vendor — narrower Tier-2 scope than Tier-1 vendor research practices (Mandiant / CrowdStrike / Unit 42 / MSTIC) but consistent technical rigor on identity / SaaS / LLM-platform abuse research. Provisional B is the conservative starting grade per the vendor-research-firm category precedent (peer class: StepSecurity B, Socket B, Sysdig B, Zellic B, Ox Security B, Upwind B, Arctic Wolf B, Push Security B). Methodological positives on first surface: Permiso names no actor (ChatGPhish is a researcher-coined vulnerability-class name, not an attribution), Hard Rule 2 compliance preserved verbatim by THN relay. Operator may upgrade to A on subsequent surfaces showing consistent rigor across additional cloud-identity / LLM-platform investigations; hold at B if context-thin commercial-research profile emerges across more findings. Pending human ratification."
+    awaiting_ratification: true
+    awaiting_direct_retrieval: true
+    active: true
+    urls:
+      - https://permiso.io/blog
+      - https://permiso.io/research
+
+  - id: shadowserver
+    name: "The Shadowserver Foundation"
+    category: vendor
+    grade: A
+    provisional: true
+    provisional_since: 2026-06-11
+    provisional_reason: "Public scanner-telemetry feed; added via Ivanti CVE-2026-10520 ITW state transition reporting 2026-06-11. First Archimedes-corpus dedicated source ID via finding-2026-06-11-0001 (Ivanti Sentry CVE-2026-10520 ITW state transition — Shadowserver public scanner-telemetry feed surfaced 19 Internet-exposed instances and 2 confirmed backdoored hosts within ~24h of watchTowr Labs PoC publication 2026-06-10). The Shadowserver Foundation is a non-profit public-benefit organization operating one of the largest Internet-scanning and threat-data collection programs globally, with daily public-scanner-telemetry reporting feeds, named technical staff bylines, and recognized peer status across CSIRT-, government-, and vendor-IR communities. Public scanner-telemetry feed class — A-grade-procedural on the facts layer (what was observed in scanning telemetry); attribution layer NOT applicable (Shadowserver does NOT make attribution claims, only attests scanning observations). Peer class: GreyNoise, Censys, Shodan, Sysdig but with explicit non-profit / public-good operating model that elevates trust on the procedural-facts layer. 72h ratification clock to 2026-06-14T06:12:00-04:00. Pending human ratification."
+    awaiting_ratification: true
+    ratification_clock: 2026-06-14T06:12:00-04:00
+    active: true
+    urls:
+      - https://www.shadowserver.org/
+      - https://dashboard.shadowserver.org/
+
+  - id: splunk-advisory-portal
+    name: "Splunk Security Advisory Portal"
+    category: vendor
+    grade: A
+    provisional: true
+    provisional_since: 2026-06-11
+    provisional_reason: "First Archimedes-corpus dedicated source ID via finding-2026-06-11-0004 (Splunk Enterprise CVE-2026-20253 + PAN Cortex CVE-2026-0274 vendor patches, no ITW). Vendor-self-disclosure on own product (Splunk Enterprise / Splunk Cloud) is procedurally A-grade per same precedent as F5 (2026-05-14), kernel.org netdev (2026-05-14), MSRC (corpus baseline), Palo Alto PSIRT (corpus baseline), Cisco PSIRT (corpus baseline), GitHub blog (2026-05-20), and LiteSpeed (2026-05-23). Splunk publishes structured security advisories on advisory.splunk.com with named CVE IDs, CVSS v3.1 vectors, affected version matrices, fix versions, and credit lines. Note: relevant to A&D-prime SOCs on Splunk Enterprise / Cloud only — the host's first-party stack runs Splunk Free per CLAUDE.md operational notes, so CVE-2026-20253 specifically does NOT affect the host's archimedes + defenseclaw_local indexes. Provisional A ratification pivots on first direct retrieval of the Splunk advisory portal (this sweep cited via SecurityWeek B-grade relay only). No fixed 72h ratification clock — clock starts on first direct retrieval. Pending direct retrieval AND human ratification."
+    awaiting_ratification: true
+    awaiting_direct_retrieval: true
+    ratification_pivots_on: first_direct_retrieval
+    active: true
+    urls:
+      - https://advisory.splunk.com/
+
+  - id: trendai-zdi-childs
+    name: "Trend Micro Zero Day Initiative (Dustin Childs, ZDI threat awareness)"
+    category: vendor
+    grade: A
+    provisional: true
+    provisional_since: 2026-06-11
+    provisional_reason: "First Archimedes-corpus dedicated source ID via finding-2026-06-11-0006 (Oracle PeopleSoft CVE-2026-35273 PM update — Dustin Childs of Trend Micro ZDI, who holds the reporter-credit on Oracle's out-of-band advisory for CVE-2026-35273, characterized exploitation as 'limited' in The Register; independent of Mandiant / ShinyHunters chain and provides the only non-Mandiant scale-bounding evidence basis this sweep). ZDI is the world's largest vendor-agnostic bug-bounty / vulnerability-research program, with a 16+ year track record on Pwn2Own, advisory publication via Trend Micro, and Childs as the named public-facing analyst on threat awareness. Procedurally A-grade per same vendor-research-tier precedent as Mandiant (corpus A), Kaspersky GReAT (corpus A), Sophos X-Ops (corpus A), Unit 42 (corpus A), and the existing zdi-blog provisional A (2026-05-16; Pwn2Own-Berlin Day 3 wrap byline). Distinguished from zdi-blog: zdi-blog is the structured ZDI advisory publication channel (zerodayinitiative.com/blog); trendai-zdi-childs is the threat-awareness commentary / quoted-analyst-byline channel (Childs as named third-party analyst across The Register, SecurityWeek, BleepingComputer). 72h ratification clock to 2026-06-14T16:00:00-04:00. Pending human ratification. Operator may decide whether to maintain two distinct IDs or consolidate under zdi-blog with disambiguating tags."
+    awaiting_ratification: true
+    ratification_clock: 2026-06-14T16:00:00-04:00
+    provenance: finding-2026-06-11-0006
+    active: true
+    urls:
+      - https://www.zerodayinitiative.com/blog
+      - https://www.trendmicro.com/en_us/research.html
+
+  - id: vulncheck-research
+    name: "VulnCheck (vulnerability intelligence and exploitation research)"
+    category: vendor
+    grade: B
+    provisional: true
+    provisional_since: 2026-06-11
+    provisional_reason: "First Archimedes-corpus dedicated source ID via finding-2026-06-11-0008 (Langflow CVE-2026-5027 CVSS 8.8 path-traversal RCE in active exploitation — VulnCheck research attesting in-the-wild exploitation of POST /api/v2/files unauthenticated via Langflow's auto-login default; ~7,000 internet-accessible Langflow instances scanned and counted, skewed to North America). VulnCheck is an independent commercial vulnerability-intelligence vendor (vulncheck.com) operating in the same research-tier neighborhood as Tenable / Rapid7 / Qualys / GreyNoise / Censys but with a CVE / KEV / exploit-intelligence focus. Conservative provisional B starting grade per same precedent as the existing tenable-research / Sysdig / Zellic / Wiz / Snyk research-tier provisional grades — independent of the source-discovery question of whether VulnCheck's ITW telemetry is corroborated by a second-source scanner (Shadowserver / GreyNoise / Censys). This sweep is single-source veto bound on the ITW claim per Trigger-1 doctrine. 72h ratification clock to 2026-06-14T16:00:00-04:00. Pending human ratification."
+    awaiting_ratification: true
+    ratification_clock: 2026-06-14T16:00:00-04:00
+    provenance: finding-2026-06-11-0008
+    active: true
+    urls:
+      - https://www.vulncheck.com/
+
+  - id: tenable-research
+    name: "Tenable Research (vulnerability research and disclosure)"
+    category: vendor
+    grade: B
+    provisional: true
+    provisional_since: 2026-06-11
+    provisional_reason: "First Archimedes-corpus dedicated source ID via finding-2026-06-11-0008 (Langflow CVE-2026-5027 originally disclosed by Tenable Research 2026-03-27; the Tenable advisory chain is the upstream-vendor-research basis for VulnCheck's downstream ITW exploitation report). Tenable Research is the dedicated vulnerability-research arm of Tenable Inc (tenable.com) — long-running CVE-disclosure program with named-analyst bylines, structured advisory publication via tenable.com/security/research, and a track record on RCE / path-traversal / web-app vulnerability research. Conservative provisional B starting grade per same precedent as the existing vendor-research-tier provisional grades (Sysdig / Zellic / Wiz / Snyk). 72h ratification clock to 2026-06-14T16:00:00-04:00. Pending human ratification. Tenable Research is one observation removed from a Tenable PSIRT category (analogous to Cisco Talos vs Cisco PSIRT; Talos is research, PSIRT is product-advisory) — operator may decide whether to also scaffold a tenable-psirt source ID for Tenable's own product CVEs distinct from this research-tier."
+    awaiting_ratification: true
+    ratification_clock: 2026-06-14T16:00:00-04:00
+    provenance: finding-2026-06-11-0008
+    active: true
+    urls:
+      - https://www.tenable.com/security/research
+
+  - id: prodaft-research
+    name: "PRODAFT (threat intelligence and ransomware research)"
+    category: vendor
+    grade: B
+    provisional: true
+    provisional_since: 2026-06-11
+    provisional_reason: "First Archimedes-corpus dedicated source ID via finding-2026-06-11-0009 (The Gentlemen / Storm-2697 / LARVA-368 / Phantom Mantis material extension — PRODAFT research relayed by The Hacker News tracking The Gentlemen as Phantom Mantis with operator designation LARVA-368; names Alexander Andreevich Yapaev as prior LockBit affiliate Tenacious Mantis, Qilin Pestilent Mantis, and Medusa Venomous Mantis before transitioning to independent operator July 2025; claimed victim count 478; technical details Go binary + Garble obfuscation + X25519 + XChaCha20 + Windows/Linux/ESXi/LVM + --spread worm-flag + 2–6 week dwell). PRODAFT is a Swiss-headquartered independent threat-intelligence vendor (prodaft.com) with a focused ransomware-and-financial-crime research program; Mantis-suffix actor designations are PRODAFT's house naming convention (analogous to Microsoft's Storm / Typhoon / Blizzard / Sandstorm taxa). Conservative provisional B starting grade per same precedent as the existing vendor-research-tier provisional grades. Source-direct grade independent of the question of how PRODAFT's operator-identity attribution chain corroborates with Microsoft's Storm-2697 designation and the prior Krebs OSINT on Yapaev — three independent vendor-tier attributions on the same identity is what drove the briefer's /new-actor candidacy strengthening, but the source grade itself is the relay-tier B until human ratification. 72h ratification clock to 2026-06-14T16:00:00-04:00. Pending human ratification."
+    awaiting_ratification: true
+    ratification_clock: 2026-06-14T16:00:00-04:00
+    provenance: finding-2026-06-11-0009
+    active: true
+    urls:
+      - https://www.prodaft.com/research
+
+  - id: blackfog-research
+    name: "BlackFog (anti-data-exfiltration vendor; ransomware and stealer research)"
+    category: vendor
+    grade: B
+    provisional: true
+    provisional_since: 2026-06-11
+    provisional_reason: "First Archimedes-corpus dedicated source ID via finding-2026-06-11-0010 (OnyxC2 MaaS credential-stealer commoditization watchlist — BlackFog research detailing OnyxC2 pricing at $250/mo standard, $500/mo HVNC premium, $6,000 source-code purchase; 210+ application targets; 95+ Chromium and 14+ Gecko extensions; dedicated 2FA and password-manager modules; zero VirusTotal detections across 71 engines on the 2026-05-30 initial upload; DLL sideloading via NVIDIA-library masquerade + in-memory execution + legitimate-signature wrapper). BlackFog is a commercial anti-data-exfiltration / EDR-adjacent vendor (blackfog.com) with a research / blog publication channel and a focus on stealer / ransomware research. Conservative provisional B starting grade per same precedent as the existing vendor-research-tier provisional grades. Two independent publisher-side relays this sweep (SecurityWeek + Security Affairs) on the same BlackFog evidence basis — no publisher independence on the underlying claims, but two-relay cross-corroboration on BlackFog's existence and the structural fact that they published research at all. 72h ratification clock to 2026-06-14T16:00:00-04:00. Pending human ratification."
+    awaiting_ratification: true
+    ratification_clock: 2026-06-14T16:00:00-04:00
+    provenance: finding-2026-06-11-0010
+    active: true
+    urls:
+      - https://www.blackfog.com/category/blog/
+
+  - id: sonatype-research
+    name: "Sonatype (open-source software supply-chain security vendor)"
+    category: vendor
+    grade: B
+    provisional: true
+    provisional_since: 2026-06-12
+    provisional_reason: "First Archimedes-corpus dedicated source ID via finding-2026-06-12-0005 (400+ Arch User Repository packages hijacked — 'Atomic Arch' Rust credential stealer + eBPF rootkit; two-wave maintainer-account adoption of abandoned AUR packages with PKGBUILD / .install script modification delivering a Rust stealer that, with root, loads an eBPF rootkit; 8 credential categories targeted including GitHub / npm / Vault tokens + OpenAI / SSH / Docker / VPN; IOCs include SHA-256 6144d433...43c98b + npm-staged atomic-lockfile@1.4.2 + js-digest + C2 temp.sh + Tor onion). Sonatype is the originating-research vendor on the Arch supply-chain campaign, relayed via BleepingComputer and The Hacker News in this window. Long-running OSS-supply-chain-security vendor (sonatype.com) with named-analyst-byline research practice and a multi-year corpus of malicious-package reports across npm / PyPI / Maven ecosystems. Conservative provisional B starting grade per same precedent as StepSecurity / Socket / Sysdig / Zellic / Ox Security / Upwind / Push Security / Permiso / VulnCheck / Tenable Research / PRODAFT / BlackFog (Tier-2 specialist vendor research). 72h ratification clock to 2026-06-15T16:00:00-04:00. Pending human ratification."
+    awaiting_ratification: true
+    ratification_clock: 2026-06-15T16:00:00-04:00
+    provenance: finding-2026-06-12-0005
+    active: true
+    urls:
+      - https://www.sonatype.com/blog
+      - https://www.sonatype.com/resources/research
+
+  - id: sygnia-research
+    name: "Sygnia (IR firm; China-nexus and APT research)"
+    category: vendor
+    grade: B
+    provisional: true
+    provisional_since: 2026-06-12
+    provisional_reason: "First Archimedes-corpus dedicated source ID via finding-2026-06-12-0004 (Velvet Ant — China-nexus actor NOT in Archimedes roster; backdoor of Linux PAM and OpenSSH on air-gapped East Asia victim with ~10-year dwell since 2016; nine PAM-module backdoor variants + modified OpenSSH logging credentials and typed commands with operator-side disable switch; sector + country NOT named in The Hacker News relay summary). Sygnia is an established incident-response firm (sygnia.co) with a published research / blog channel and a multi-year record on China-nexus actor research (Velvet Ant cluster, multiple prior public reports). Conservative provisional B starting grade per same precedent as the existing vendor-research-tier provisional grades. Sygnia primary blog NOT directly retrieved this sweep — flag for next-sweep direct retrieval (the THN relay is the sole in-window source basis); the THN relay does NOT include IOC enumeration which the primary likely carries. Single-source veto applies at the relay layer (one B-grade relay on Sygnia primary); the underlying Sygnia attribution / TTP characterization is preserved verbatim per Hard Rule 2 (China-nexus; NOT cross-walked to APT41 / Volt Typhoon / Salt Typhoon / APT40). 72h ratification clock to 2026-06-15T16:00:00-04:00. Pending direct retrieval of Sygnia primary AND human ratification."
+    awaiting_ratification: true
+    awaiting_direct_retrieval: true
+    ratification_clock: 2026-06-15T16:00:00-04:00
+    provenance: finding-2026-06-12-0004
+    active: true
+    urls:
+      - https://www.sygnia.co/blog/
+      - https://www.sygnia.co/threat-reports/
+
+  - id: tenet-security-research
+    name: "Tenet Security (AI / agent security research)"
+    category: vendor
+    grade: B
+    provisional: true
+    provisional_since: 2026-06-12
+    provisional_reason: "First Archimedes-corpus dedicated source ID via finding-2026-06-12-0007 Part A (Agentjacking attack research — 85% success rate injecting malicious instructions into fabricated Sentry error events; AI coding agents Claude Code and Cursor interpret the content as legitimate guidance; 2,388 orgs have exploitable DSNs in Tenet's enumeration; Sentry declined to patch the behavior — content filter only). Tenet Security is a specialist AI / agent-security research practice; first surface in the Archimedes corpus. Conservative provisional B starting grade per same precedent as StepSecurity / Socket / Sysdig / Zellic / Ox Security / Upwind / Push Security / Permiso / VulnCheck / Tenable / PRODAFT / BlackFog / Sonatype (Tier-2 specialist vendor research). Methodological positive on first surface: empirical success-rate measurement (85% across enumerated DSN population) + named-vendor-counterparty disposition (Sentry declined to patch; content filter only) + bounded population (2,388 orgs enumerated) + named-agent-tool scope (Claude Code, Cursor). Cited via The Hacker News in this window; Tenet primary write-up NOT directly retrieved this sweep — flag for next-sweep direct retrieval. 72h ratification clock to 2026-06-15T16:00:00-04:00. Pending direct retrieval of Tenet primary AND human ratification."
+    awaiting_ratification: true
+    awaiting_direct_retrieval: true
+    ratification_clock: 2026-06-15T16:00:00-04:00
+    provenance: finding-2026-06-12-0007
+    active: true
+    urls:
+      - https://www.tenetsecurity.com/
+
+  - id: dataminr-research
+    name: "Dataminr (real-time event intelligence; OSINT and IR analysis)"
+    category: vendor
+    grade: B
+    provisional: true
+    provisional_since: 2026-06-12
+    provisional_reason: "First Archimedes-corpus dedicated source ID via finding-2026-06-12-0003 (Handala Hack #014 California Water Service self-claim — Dataminr identifies RTKBase as the likely initial-access vector with lateral move to billing; analysis cited via SecurityWeek relay alongside Handala's own self-publication). Dataminr (dataminr.com) is an established real-time event-intelligence and OSINT-analysis firm with a multi-year track record on breach-attribution analysis; cited via SecurityWeek in this surface as the source of the RTKBase-as-IAV analytical hypothesis. Conservative provisional B starting grade per same precedent as the existing vendor-research / IR-analysis Tier-2 provisional grades. Note: the RTKBase-IAV layer in this finding carries WEP 'possibly' under single-source veto (Dataminr is sole originator of the analysis; carry-forward into Handala dossier #014 deferred to actor-profiler). 72h ratification clock to 2026-06-15T16:00:00-04:00. Pending human ratification."
+    awaiting_ratification: true
+    ratification_clock: 2026-06-15T16:00:00-04:00
+    provenance: finding-2026-06-12-0003
+    active: true
+    urls:
+      - https://www.dataminr.com/blog
+      - https://www.dataminr.com/dataminr-pulse
+
+  - id: beyondtrust-psirt
+    name: "BeyondTrust security advisories (RS / PRA / PAM product line)"
+    category: vendor
+    grade: A
+    provisional: true
+    provisional_since: 2026-07-07
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-07-07-0001 (BeyondTrust Remote Support / Privileged Remote Access four-CVE disclosure — CVE-2026-40138 + CVE-2026-40139 critical CVSS 9.2 pre-auth authentication bypasses, CVE-2026-40140 high pre-auth DoS, CVE-2026-40141 high authenticated authorization-scope bypass; fixed in 25.3.3 / 26.2.1; cloud patched 2026-04-21; self-hosted must upgrade; NOT in CISA KEV, no active exploitation reported, no actor attributed). Vendor PSIRT / security-advisory channel for BeyondTrust's own products (Remote Support, Privileged Remote Access, broader PAM line). Vendor-self-disclosure on own products is procedurally A-grade — authoritative for its own product's CVE existence, affected/fixed version matrices, and patch timeline — per the established precedent class for Cisco PSIRT, F5, Ivanti PSIRT, Palo Alto PSIRT, Arista Networks PSIRT (all provisional A). NOT authoritative for attribution or ITW exploitation of third-party activity — Hard Rule 2 preserved on finding 0001 (the Silk Typhoon reference in reporting is HISTORICAL context re: PRIOR DIFFERENT BeyondTrust zero-days in the 2024-25 Treasury breach, NOT these CVEs; no actor attributed to CVE-2026-40138..40141 by any source, none originated here). This surface: relay-only via BleepingComputer (B relay, ratified); the BeyondTrust advisory primary was NOT directly retrieved this sweep — the vendor advisory page returned HTTP 403 to WebFetch on 2026-07-07, so NVD was the enrichment anchor (awaiting_direct_retrieval). Single-source veto applied at grader (one effective source, CVSS numerics publisher-labeled only) — WEP capped at 'likely'. Pending direct retrieval of the BeyondTrust advisory primary AND human ratification."
+    awaiting_ratification: true
+    awaiting_direct_retrieval: true
+    provenance: finding-2026-07-07-0001
+    active: true
+    urls:
+      - https://www.beyondtrust.com/trust-center/security-advisories
+      - https://www.beyondtrust.com/docs/
+
+  - id: checkpoint-research
+    name: "Check Point Research (CPR)"
+    category: vendor
+    grade: A
+    provisional: true
+    provisional_since: 2026-07-06
+    provisional_reason: "First Archimedes-corpus dedicated source ID via finding-2026-07-06-0001 (Cavern / Cav3rn modular .NET C2 framework; CPR attributes activity to a new MOIS-affiliated cluster it designates Cavern Manticore, with tactical overlaps to MuddyWater and Lyceum/OilRig-subgroup but designated a distinct new cluster). Tier-1 vendor research practice — provisional A per the first-surface precedent applied to Bitdefender / Symantec / Darktrace / Cisco Talos / SentinelOne. This surface: relayed via The Hacker News; CPR primary NOT directly retrieved (awaiting_direct_retrieval preserved as a separate collection todo, not a grade blocker)."
+    awaiting_ratification: false
+    ratified_by: ryan
+    ratified_at: 2026-07-07
+    awaiting_direct_retrieval: true
+    provenance: finding-2026-07-06-0001
+    active: true
+    urls:
+      - https://research.checkpoint.com/
+
+  - id: kevintel
+    name: "KEVIntel (Ryan Dewhurst honeypot / exploitation-telemetry)"
+    category: vendor
+    grade: B
+    dual_grade: "A/F"
+    provisional: true
+    provisional_since: 2026-07-06
+    provisional_reason: "First Archimedes-corpus dedicated source ID via finding-2026-07-06-flash-1629-0001 (Adobe ColdFusion CVE-2026-48282 active-exploitation observation; KEVIntel honeypot telemetry co-attests exploitation independently of CCCS). Technical exploitation-observation source with a dual grade: A-on-facts for 'exploitation attempts observed against honeypot network' (like GreyNoise / Shodan observation-of-fact); F-on-attribution (cannot attribute actor). Conservative provisional B overall on first surface pending track-record. Scaffold candidate previously noted in corpus (finding-2026-06-17-0001 FortiSandbox second-IR-vendor channel). This surface: relay-only via BleepingComputer; the KEVIntel post was NOT directly retrieved (awaiting_direct_retrieval preserved as a separate collection todo, not a grade blocker)."
+    awaiting_ratification: false
+    ratified_by: ryan
+    ratified_at: 2026-07-07
+    awaiting_direct_retrieval: true
+    provenance: finding-2026-07-06-flash-1629-0001
+    active: true
+    urls:
+      - https://kevintel.com/
+
+  - id: watchtowr
+    name: "watchTowr"
+    category: vendor
+    grade: B
+    provisional: true
+    provisional_since: 2026-07-18
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-07-18-0001 (state change; raw-2026-07-18-pm-001) as the originating source of the CVE-2026-63030 'wp2shell' in-the-wild-onset observation (CEO Benjamin Harris: 'first signs of in-the-wild exploitation'). watchTowr is a recognized offensive-security / n-day exploitation-research firm with exploitation-observation telemetry. No prior Archimedes-corpus citation -> conservative provisional B on first surface, pending human ratification. Reached the corpus THIS pass only as a BleepingComputer (B) relay (NOT directly retrieved), so no independent-retrieval basis yet; the ITW-onset leg is graded B3 (single provisional firm, hedged 'first signs', no atomic IOCs published, single-source veto binds). Operator may ratify at B, upgrade toward A on subsequent surfaces showing consistent first-party exploitation-telemetry rigor, or downgrade if low-fidelity. NOTE on source-name fidelity: the BleepingComputer relay rendered the firm as 'watchToyr' — recorded here as the correct name watchTowr (OCR/transcription artifact; flagged, not silently propagated)."
+    awaiting_ratification: true
+    awaiting_direct_retrieval: true
+    provenance: finding-2026-07-18-0001
+    active: true
+    urls:
+      - https://watchtowr.com/
+
+  - id: defused
+    name: "Defused (exploitation-detection telemetry)"
+    category: vendor
+    grade: B
+    provisional: true
+    provisional_since: 2026-07-20
+    provisional_reason: "First Archimedes-corpus surface via finding-2026-07-20-flash-0600-0001 (raw-2026-07-20-flash-0600-001) as the originating source of the CVE-2026-6875 ServiceNow AI Platform in-the-wild-exploitation observation (first attempts 2026-07-18; attackers using an exploitation route distinct from the published PoC). Defused is a threat-intel / exploitation-detection telemetry feed (tracks in-the-wild exploitation attempts). First surface -> conservative provisional B on the exploitation-telemetry-feed class, consistent with the watchTowr (2026-07-18) and KEVIntel (2026-07-07) precedents for first-surface exploitation-telemetry firms. Reached the corpus THIS pass only as a BleepingComputer (B) relay (NOT directly retrieved), so no independent-retrieval basis yet. Operator may ratify at B, upgrade toward A on subsequent surfaces showing consistent first-party exploitation-telemetry rigor, or downgrade if low-fidelity."
+    awaiting_ratification: true
+    awaiting_direct_retrieval: true
+    provenance: finding-2026-07-20-flash-0600-0001
+    active: true
+    urls:
+      - https://defused.io/
+
+  - id: patchstack
+    name: "Patchstack (WordPress vulnerability intelligence)"
+    category: vendor
+    grade: B
+    provisional: true
+    provisional_since: 2026-07-20
+    provisional_reason: "First Archimedes-corpus surface via finding-2026-07-18-0001 STATE CHANGE #2 (raw-2026-07-20-flash-0600-002) as one of three firms confirming CVE-2026-63030 / CVE-2026-60137 'wp2shell' in-the-wild exploitation (Patchstack: documented active attacks). Patchstack is the recognized WordPress-vulnerability-intelligence authority (WP VDP + vulnerability database) with documented active-attack telemetry. First surface -> conservative provisional B (WordPress-security specialist research class, peer to the Sysdig / Socket / watchTowr provisional-B precedents). Reached the corpus THIS pass only as a SecurityWeek (B) relay (NOT directly retrieved). Operator may ratify at B, upgrade toward A on subsequent surfaces showing consistent WP-security telemetry rigor, or downgrade if low-fidelity."
+    awaiting_ratification: true
+    awaiting_direct_retrieval: true
+    provenance: finding-2026-07-18-0001
+    active: true
+    urls:
+      - https://patchstack.com/
+
+  - id: hexastrike
+    name: "Hexastrike (exploitation-honeypot / IR)"
+    category: vendor
+    grade: C
+    provisional: true
+    provisional_since: 2026-07-20
+    provisional_reason: "First Archimedes-corpus surface via finding-2026-07-18-0001 STATE CHANGE #2 (raw-2026-07-20-flash-0600-002) as one of three firms confirming CVE-2026-63030 / CVE-2026-60137 'wp2shell' in-the-wild exploitation (Hexastrike: honeypot exploitation over the weekend + IR assist). Hexastrike is an exploitation-honeypot / IR firm with no prior Archimedes-corpus track record and no established public profile visible at first surface. Conservative provisional C (unknown vendor with a technical/honeypot writeup, pending review) — one notch below Patchstack / watchTowr, erring low for a truly-unknown outfit per the LayerX / Seqrite / Aikido conservative-starting-grade precedent. Reached the corpus THIS pass only as a SecurityWeek (B) relay (NOT directly retrieved). Operator may upgrade to B on subsequent surfaces showing consistent honeypot-telemetry rigor, or hold at C if context-thin."
+    awaiting_ratification: true
+    awaiting_direct_retrieval: true
+    provenance: finding-2026-07-18-0001
+    active: true
+    urls:
+      - https://hexastrike.com/
+
+  - id: group-ib
+    name: "Group-IB (threat intelligence / IR)"
+    category: vendor
+    grade: A
+    provisional: true
+    provisional_since: 2026-07-20
+    provisional_reason: "First Archimedes-corpus surface via finding-2026-07-20-0001 (HollowGraph — new Iran-nexus M365-Graph/calendar covert-C2 espionage malware; Israel-focused set, >=12 systems infected / 3 actively communicating June 3-July 9; C2 cloudlanecdn[.]com, config logAzure.txt; Group-IB links HollowGraph to the Cavern C2 framework at high confidence as a tooling call, plus a low-confidence Lyceum similarity it states is insufficient to attribute). Group-IB is a globally recognized threat-intelligence / DFIR vendor with an established APT-tracking and malware-teardown track record — peer class to the corpus A-grade vendor tier (Mandiant / CrowdStrike / Recorded Future / MSTIC). Provisional A on that vendor-authority basis. Reached the corpus THIS pass only as a BleepingComputer (B) relay — the Group-IB primary research writeup was NOT directly retrieved (awaiting_direct_retrieval preserved as a collection todo, not a grade blocker). Operator may ratify at A, or hold to B pending a subsequent direct-retrieval surface establishing consistent first-party technical rigor. Attribution note per Hard Rule 2: Group-IB's Cavern-framework linkage is a tooling call, NOT an operator identification — do NOT propagate to a named tracked actor on this single-source tooling linkage."
+    awaiting_ratification: true
+    awaiting_direct_retrieval: true
+    provenance: finding-2026-07-20-0001
+    active: true
+    urls:
+      - https://www.group-ib.com/blog/
+
+  - id: volexity
+    name: "Volexity (IR / threat intelligence)"
+    category: vendor
+    grade: A
+    provisional: true
+    provisional_since: 2026-07-20
+    provisional_reason: "First Archimedes-corpus surface via finding-2026-07-14-0007 update-2026-07-20-0001 (SonicWall SMA1000 CVE-2026-15409 unauth SSRF CVSS 10.0 / CVE-2026-15410 authenticated-admin OS command injection CVSS 7.2 — Volexity, assisting the SonicWall IR, dates in-the-wild exploitation to ~June 22, roughly three weeks before the July 14 disclosure/patch; tracks the activity as UTA0533 and assesses it more consistent with state-sponsored than criminal; named tooling KnuckleBall / OrangeTail / Suo5). Volexity is a well-regarded IR / threat-intelligence firm with an established memory-forensics and nation-state-IR track record — peer class to the corpus A-grade vendor tier (Mandiant / CrowdStrike). Provisional A on that vendor-authority basis. Reached the corpus THIS pass only as a SecurityWeek (B) relay — the Volexity primary writeup was NOT directly retrieved (awaiting_direct_retrieval preserved as a collection todo, not a grade blocker). Single-source-veto note: CISA KEV and Volexity likely share one upstream evidence chain (Volexity sits inside the SonicWall IR), so the active-exploitation leg holds at 'likely' / digraph A2 — a red-team review blocked an attempted lift to very likely on exactly this independence question. UTA0533 is Volexity's own single-source designation, NOT cross-walked to any tracked actor (Hard Rule 2). Operator may ratify at A, or hold to B pending a direct-retrieval surface."
+    awaiting_ratification: true
+    awaiting_direct_retrieval: true
+    provenance: finding-2026-07-14-0007
+    active: true
+    urls:
+      - https://www.volexity.com/blog/
+
+# ============================================================================
+# Security Media & Researchers
+# ============================================================================
+media_sources:
+  - id: krebs
+    name: "Krebs on Security"
+    category: media
+    grade: B
+    active: true
+    rationale: "Strong track record, well-sourced, occasional single-source reports"
+    urls:
+      - https://krebsonsecurity.com/
+    rss: https://krebsonsecurity.com/feed/
+  
+  - id: the-record
+    name: "The Record (Recorded Future)"
+    category: media
+    grade: B
+    active: true
+    rationale: "Quality journalism, usually well-sourced"
+    urls:
+      - https://therecord.media/
+    rss: https://therecord.media/feed/
+  
+  - id: bleepingcomputer
+    name: "BleepingComputer"
+    category: media
+    grade: B
+    active: true
+    rationale: "Fast and accurate on CVEs/ransomware, sometimes light on context"
+    urls:
+      - https://www.bleepingcomputer.com/
+    rss: https://www.bleepingcomputer.com/feed/
+  
+  - id: wired-security
+    name: "Wired (security desk)"
+    category: media
+    grade: B
+    active: true
+    rationale: "Good journalism, secondary source"
+    urls:
+      - https://www.wired.com/category/security/
+  
+  - id: ars-security
+    name: "Ars Technica (security)"
+    category: media
+    grade: B
+    active: true
+    rationale: "Good journalism, secondary source"
+    urls:
+      - https://arstechnica.com/security/
+
+  - id: securityweek
+    name: "SecurityWeek"
+    category: media
+    grade: B
+    provisional: true
+    provisional_since: 2026-05-06
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-06-FLASH-0002 as a relay of Rapid7's MuddyWater attribution. Pending human ratification per source-grade-log.md 2026-05-06 entry. Operator can ratify at B or downgrade to C if context-thin relay-only profile is observed across more findings."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://www.securityweek.com/
+
+  - id: layerx
+    name: "LayerX Security"
+    category: vendor
+    grade: C
+    provisional: true
+    provisional_since: 2026-05-08
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-08-0004 (ClaudeBleed Chrome-extension trust-boundary research; sole primary, SecurityWeek relay). Unknown vendor — no prior peer-reviewed track record observed in Archimedes corpus, no named-analyst-byline research history visible at first surface. Browser-security-vendor commercial origin (potential conflict-of-interest with the vulnerability class they research). Provisional C is conservative starting grade pending track-record observation. Operator may upgrade to B if subsequent findings show consistent technical rigor, or hold at C if context-thin commercial-research profile is observed."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://layerxsecurity.com/
+
+  - id: industrialcyber-co
+    name: "Industrial Cyber"
+    category: media
+    grade: B
+    provisional: true
+    provisional_since: 2026-05-13
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-13-FLASH-1800-0001 as a relay of Symantec's MuddyWater / Seedworm Q1 2026 multi-victim attribution. ICS/OT-focused security media outlet. Conservative provisional B starting grade for the media-relay tier per same precedent as SecurityWeek (2026-05-06)."
+    relay_layer_conflation_observed_2026_05_13: |
+      Relay-layer conflation observed on first-citation surface. Industrial Cyber's coverage of the
+      Symantec MuddyWater Q1 2026 multi-victim campaign introduced a "U.S. defense and aerospace
+      software supplier with Israeli operations" victim claim that is NOT present in the Symantec
+      primary (https://www.security.com/threat-intelligence/iran-seedworm-electronics). Treated by
+      Archimedes grader / briefer / red-team as cross-campaign conflation with the separate March 2026
+      Symantec Dindoor/Fakeset US-critical-infrastructure campaign (different malware family, different
+      victim set). The A&D-supplier claim was NOT propagated into finding-2026-05-13-FLASH-1800-0001
+      per Hard Rule 2 (no first-time attribution origination via relay). Re-evaluates only if Symantec
+      primary updates to name an A&D-supplier victim, or if an independent A/B-grade source corroborates
+      the claim with explicit A&D-prime naming within the 24-72h post-disclosure window (deadline
+      2026-05-16 18:00 EDT). If the conflation pattern recurs on subsequent Industrial Cyber relays,
+      consider downgrade to C.
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://industrialcyber.co/
+
+  - id: securityaffairs
+    name: "Security Affairs (Pierluigi Paganini)"
+    category: media
+    grade: B
+    provisional: true
+    provisional_since: 2026-05-29
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-29-0002 as one of two independent in-window trade-press relays of MSRC's Chaotic Eclipse state-transition statement (BlueHammer / RedSun / UnDefend now under active ITW exploitation). Long-running independent security-news outlet with named-analyst byline (Pierluigi Paganini); category is Security Media & Independent Researchers per source-grade cheatsheet. Conservative provisional B starting grade for the media-relay tier per same precedent as SecurityWeek (2026-05-06), Industrial Cyber (2026-05-13), and The Hacker News (2026-05-14). Pending human ratification. Surface context: relay-only on a contested CVD dispute where MSRC is both the load-bearing primary AND a counterparty; Archimedes preserved the meta-statement vs underlying-fact WEP layering rather than asserting the underlying ITW fact as corroborated."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://securityaffairs.com/
+
+  - id: theregister
+    name: "The Register (security desk)"
+    category: media
+    grade: B
+    provisional: true
+    provisional_since: 2026-05-29
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-29-0002 as the second independent in-window trade-press relay of MSRC's Chaotic Eclipse state-transition statement, paired with Security Affairs to resolve the prior single-source veto from PM-28 FLASH-12 rejection (reject-2026-05-28-0001). UK-based long-running security-and-tech outlet with named-analyst bylines and editorial track record on Microsoft vulnerability coverage. Category is Security Media & Independent Researchers per source-grade cheatsheet. Conservative provisional B starting grade per same precedent as SecurityWeek / Industrial Cyber / The Hacker News / Security Affairs. Pending human ratification. Surface context: contributed direct-quote industry commentary (Dustin Childs / ZDI, Katie Moussouris / Luta Security) used in Other Signal section under Hard Rule 6 quote discipline (<15 words, one quote per source)."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://www.theregister.com/security/
+
+  - id: thehackernews
+    name: "The Hacker News"
+    category: media
+    grade: B
+    provisional: true
+    provisional_since: 2026-05-14
+    provisional_reason: "Second-cross-corroboration-cycle Archimedes-corpus citation as relay across multiple findings. Today's brief uses The Hacker News as relay on TWO independent items in 2026-05-14 morning brief: finding-2026-05-14-0002 (NGINX Rift, relay of SecurityWeek / F5 K000160932 with editorial '18-year dormancy' framing flagged as non-vendor-attested) + finding-2026-05-14-0003 (Fragnesia, relay of BleepingComputer / Zellic). Prior surfaces: finding-2026-05-13-FLASH-0001 (Bitdefender / FamousSparrow relay), finding-2026-05-13-FLASH-1800-0001 (Symantec / MuddyWater relay). Fast-cycle security media outlet on a par with BleepingComputer / SecurityWeek; conservative provisional B starting grade per same precedent as those peers. Editorial-amplification observed (NGINX Rift '18-year dormancy' framing not vendor-attested, also surfaced from depthfirst researcher commentary) is a flag — operator may downgrade to C if editorial-overreach pattern recurs on subsequent surfaces. Pending human ratification."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://thehackernews.com/
+
+  - id: anyrun
+    name: "ANY.RUN"
+    category: vendor
+    grade: B
+    provisional: true
+    provisional_since: 2026-08-04
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-08-04-0001 (Greatness PhaaS adds OAuth device-code phishing + AiTM M365 credential/token theft — commodity tooling). ANY.RUN operates an interactive malware sandbox and a Threat Intelligence Lookup service; its Greatness overview provided platform tradecraft detail (base-domain / [target]-[token] subdomain pattern, anti-analysis gating, evasion behavior) corroborating the foundation of the finding but predating the Aug 2026 device-code capability. Sandbox-derived behavioral reporting with named research output; conservative provisional B starting grade for the security-research/sandbox-vendor tier per same precedent as SecurityWeek, Sysdig, Zellic, and the media-relay peers (The Hacker News, BleepingComputer). Cited here as secondary corroborator of the platform foundation, NOT the novel capability (single-source veto on the new-capability element carried by The Hacker News). Operator may upgrade to A on subsequent surfaces showing consistent first-party-sandbox-telemetry rigor. Pending human ratification."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://any.run/
+      - https://intelligence.any.run/
+
+  - id: helpnetsecurity
+    name: "Help Net Security"
+    category: media
+    grade: B
+    provisional: true
+    provisional_since: 2026-06-11
+    provisional_reason: "First Archimedes-corpus dedicated source ID via finding-2026-06-11-0001 (Ivanti Sentry CVE-2026-10520 ITW state transition — relay of Shadowserver Foundation telemetry on 19 Internet-exposed instances + 2 confirmed backdoored hosts post-watchTowr-PoC) and finding-2026-06-11-0002 (FBI/DOJ 13-website seizure tied to Chinese intelligence services — Markovic byline relay of DOJ enforcement action and contextualization). Long-running independent security-media outlet (helpnetsecurity.com, parent: HelpNet Security d.o.o.) with named-analyst bylines, daily cadence, and editorial track record on European + global vulnerability reporting. Category is Security Media per source-grade cheatsheet. Conservative provisional B starting grade for the media-relay tier per same precedent as SecurityWeek (2026-05-06), Industrial Cyber (2026-05-13), The Hacker News (2026-05-14), Security Affairs (2026-05-29), and The Register (2026-05-29). 72h ratification clock to 2026-06-14T06:12:00-04:00. Pending human ratification."
+    awaiting_ratification: true
+    ratification_clock: 2026-06-14T06:12:00-04:00
+    active: true
+    urls:
+      - https://www.helpnetsecurity.com/
+
+  - id: associated-press
+    name: "The Associated Press"
+    category: media
+    grade: A
+    provisional: true
+    provisional_since: 2026-06-11
+    provisional_reason: "First Archimedes-corpus dedicated source ID via finding-2026-06-11-0002 (FBI/DOJ 13-website seizure tied to Chinese intelligence services recruitment of US-cleared personnel — AP byline reporting relayed by SecurityWeek). Major US wire service with global newsgathering footprint, named-byline editorial standards, and recognized credibility for breaking US federal enforcement coverage. Provisional A starting grade reflects wire-service-class authority (peer class: Reuters, AFP, Bloomberg breaking-news coverage of US enforcement actions). Category is Security Media (major US wire service). 72h ratification clock to 2026-06-14T08:18:00-04:00. Operator may downgrade to B if context-thin relay-only profile is observed on subsequent surfaces; A is the default starting grade given wire-service-class editorial backbone. Pending human ratification."
+    awaiting_ratification: true
+    ratification_clock: 2026-06-14T08:18:00-04:00
+    active: true
+    urls:
+      - https://apnews.com/
+
+  - id: bloomberg
+    name: "Bloomberg (breaking news / investigative)"
+    category: media
+    grade: B
+    provisional: true
+    provisional_since: 2026-06-12
+    provisional_reason: "First Archimedes-corpus dedicated source ID via finding-2026-06-12-0008 (IBM / AT&T whistleblower civil-suit unsealing — William Barlow's 2020 qui tam alleges IBM and AT&T concealed federal-contractor breaches by foreign and unidentified hackers while providing false security-posture assurances to maintain federal contracts; DOJ declined to intervene; pending in federal court in New York). Bloomberg broke the unsealing 2026-06-04; this Archimedes citation comes via SecurityWeek's In Other News column. Major US business news service with global newsgathering footprint, named-byline editorial standards, and recognized credibility for breaking US federal-court and enforcement coverage. Provisional B starting grade is a conservative position pending OPERATOR TIER DECISION between (a) wire-service-class provisional A precedent (Associated Press, 2026-06-11) and (b) Tier-1 trade-press provisional B precedent (Reuters / Bloomberg news desks have been observed in prior corpus surfaces as relays without dedicated source-IDs; cite-but-not-dedicated profile). Operator note pending: Bloomberg's investigative-byline track record on federal-contractor + national-security breach coverage (long-running) and the unsealed-court-record substrate of this surface argue for an upgrade to provisional A; the relay-via-SecurityWeek + court-record-derived substantive basis (vs. independent investigative reporting on operational facts) argues for hold at B. 72h ratification clock to 2026-06-15T16:00:00-04:00. Pending OPERATOR TIER DECISION between B and B+/A AND human ratification."
+    awaiting_ratification: true
+    awaiting_operator_tier_decision: true
+    operator_tier_decision_options: [B, B+, A]
+    ratification_clock: 2026-06-15T16:00:00-04:00
+    provenance: finding-2026-06-12-0008
+    active: true
+    urls:
+      - https://www.bloomberg.com/
+
+  - id: depthfirst
+    name: "depthfirst (independent researcher)"
+    category: researcher
+    grade: C
+    provisional: true
+    provisional_since: 2026-05-16
+    provisional_history:
+      - grade: F
+        provisional_since: 2026-05-14
+        retired_at: 2026-05-16
+        reason: "First-surface conservative floor pending observable research history. Elevated to C on 2026-05-16 per 'elevate to provisional-C on first technical write-up publication' trigger documented in source-grade-log.md 2026-05-14 entry."
+    provisional_reason: "Elevated F → C on 2026-05-16 per first-technical-write-up-publication trigger from source-grade-log.md 2026-05-14 entry. Surfaced via finding-2026-05-16-0001 (SecurityWeek Ionut Arghire byline reports depthfirst published proof-of-concept exploit code for CVE-2026-42945 NGINX Rift at GitHub repository https://github.com/depthfirstdisclosures/nginx-rift, 36-48h after F5 K000160932 quarterly-advisory disclosure 2026-05-14). The GitHub PoC repository constitutes a technical-output publication; depthfirst is the originating researcher credited on the underlying CVE per F5 vendor self-disclosure chain (carry-forward from finding-2026-05-14-0002). depthfirst transitions from 'cited via THN editorial framing' (F surface) to 'named PoC author with operational artifact at stated URL' (C surface). Hard Rule 3 prevents Archimedes from fetching the PoC repository contents, so direct content-verification did not occur — the elevation rests on the vendor-attested originating-research credit plus the SecurityWeek-attested publication act, not on Archimedes' own verification of the artifact. Conservative C is the precedent grade for first-publication independent-researcher surfaces with vendor-acknowledgement context (LayerX-precedent / Seqrite-precedent / Trendyol-Albayrak-precedent class). NO depthfirst-to-A or -to-B path on this surface — single publication, no peer-review, no vendor-acknowledgement of the PoC code itself (vs. the CVE credit which IS vendor-attested per F5 K000160932). Operator may upgrade to B on subsequent surfaces showing peer-reviewed publication or vendor coordination on a second CVE / technical write-up. Pending human ratification."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://github.com/depthfirstdisclosures
+
+  - id: aonan-guan
+    name: "Aonan Guan (independent security researcher)"
+    category: researcher
+    grade: C
+    provisional: true
+    provisional_since: 2026-05-20
+    provisional_reason: "First Archimedes-corpus citation via finding-2026-05-20-0007 (Anthropic Claude Code sandbox bypass — SOCKS5 hostname null-byte mechanism class; patched in Claude Code 2.1.88 on 2026-03-31; no CVE assigned to the second bypass; first bypass got CVE-2025-66479 separately on the sandbox-runtime library). Aonan Guan is an independent security researcher who disclosed the second-bypass mechanism to Anthropic via HackerOne; vendor marked the report as duplicate of the first-bypass report. Cited via SecurityWeek (Eduard Kovacs byline) which is the sole directly-retrieved primary this sweep; Guan's own write-up referenced but not directly retrieved. Provisional C is the conservative starting grade for an unknown independent researcher with no prior Archimedes-corpus track record, per the precedent applied to LayerX (2026-05-08), Berk Albayrak / Trendyol Group (2026-05-10), Seqrite Labs analyst byline (2026-05-08), and depthfirst initial F→C elevation (2026-05-16). Upgrade path: (a) direct retrieval of Guan's own write-up confirming technical rigor; (b) second-source corroboration of the SOCKS5 null-byte mechanism by an independent security-research practice; or (c) accumulation of multiple subsequent findings demonstrating consistent technical accuracy. Methodological positive on first surface: researcher chained the bypass with a prompt-injection vector for proof-of-impact (research-scenario name researcher-coined, NOT attributed campaign) and pursued vendor-coordinated disclosure via HackerOne (responsible-disclosure positive). Pending human ratification."
+    awaiting_ratification: true
+    active: true
+    urls:
+      - https://hackerone.com/
+
+  - id: will-dormann-researcher
+    name: "Will Dormann (independent vulnerability researcher; former CERT/CC)"
+    category: researcher
+    grade: B
+    provisional: true
+    provisional_since: 2026-06-11
+    provisional_reason: "First Archimedes-corpus dedicated source ID via finding-2026-06-11-0012 (Nightmare Eclipse GreatXML claimed BitLocker bypass via Recovery-partition unattend.xml + WinRE shell access — Will Dormann publicly reported he cannot reproduce the bypass; per Dormann's critique, the preconditions (logged-in admin must have initiated Defender Offline Scan previously) negate the bypass class). Dormann is a long-standing vulnerability researcher with a CERT/CC track record (former CERT/CC vulnerability analyst, ~20-year career on coordinated vulnerability disclosure / Windows internals / sandbox-escape research); independent reproduction-attempt analysis is exactly the methodological corrective the corpus needs against single-researcher zero-day claims absent vendor confirmation. Provisional B starting grade (above the unknown-researcher C floor applied to Aonan Guan / Berk Albayrak / LayerX) on the strength of the CERT/CC pedigree + multi-year public track record + the specifically-cited reproduction-attempt methodology in this surface. Upgrade path: ratify to A on accumulated track record of independent reproduction-attempt analyses that hold up against subsequent vendor confirmations. 72h ratification clock to 2026-06-14T16:00:00-04:00. Pending human ratification."
+    awaiting_ratification: true
+    ratification_clock: 2026-06-14T16:00:00-04:00
+    provenance: finding-2026-06-11-0012
+    active: true
+    urls:
+      - https://infosec.exchange/@wdormann
+
+  - id: github-advisories
+    name: "GitHub Security Advisories"
+    category: reference
+    grade: B
+    active: true
+    rationale: "Technically vetted, varies by maintainer"
+    urls:
+      - https://github.com/advisories
+
+# ============================================================================
+# Technical Enrichment Sources (dual-grade: facts vs. attribution)
+# ============================================================================
+technical_sources:
+  - id: shodan
+    name: "Shodan"
+    category: enrichment
+    grade_facts: A
+    grade_attribution: F
+    active: true
+    rationale: "Authoritative on infrastructure state, no attribution ability"
+    api_required: true
+  
+  - id: censys
+    name: "Censys"
+    category: enrichment
+    grade_facts: A
+    grade_attribution: F
+    active: true
+    rationale: "Same as Shodan"
+    api_required: true
+  
+  - id: virustotal
+    name: "VirusTotal"
+    category: enrichment
+    grade_facts: B
+    grade_attribution: F
+    active: true
+    rationale: "Vendor consensus, false positives happen"
+    api_required: true
+  
+  - id: urlscan
+    name: "urlscan.io"
+    category: enrichment
+    grade_facts: B
+    grade_attribution: F
+    active: true
+    rationale: "Accurate for what it captures, limited context"
+    api_required: true
+  
+  - id: whois-rdap
+    name: "WHOIS / RDAP"
+    category: enrichment
+    grade_facts: A
+    grade_attribution: F
+    active: true
+    rationale: "Authoritative registration data"
+  
+  - id: hibp
+    name: "Have I Been Pwned"
+    category: enrichment
+    grade_facts: A
+    grade_attribution: F
+    active: true
+    rationale: "Pwned Passwords + breach list authoritative; attribution F"
+    api_required: true
+  
+  - id: threatfox
+    name: "ThreatFox (abuse.ch)"
+    category: enrichment
+    grade_facts: B
+    grade_attribution: B
+    active: true
+    rationale: "Community-contributed, generally solid IOCs"
+    api_required: true
+  
+  - id: malwarebazaar
+    name: "MalwareBazaar (abuse.ch)"
+    category: enrichment
+    grade_facts: B
+    grade_attribution: B
+    active: true
+    rationale: "Sample confirmed real, context varies"
+    api_required: true
+  
+  - id: github-codesearch
+    name: "GitHub Code Search"
+    category: enrichment
+    grade_facts: B
+    grade_attribution: F
+    active: true
+    rationale: "Code presence yes, intent no"
+    api_required: true
+
+  - id: abuseipdb
+    name: "AbuseIPDB"
+    category: enrichment
+    grade_facts: B
+    grade_attribution: F
+    active: true
+    rationale: "Community-contributed IP reputation database; solid for IP triage, occasional false positives from misclassified scanners"
+    api_required: true
+
+  - id: intelx
+    name: "Intelligence X"
+    category: enrichment
+    grade_facts: C
+    grade_attribution: C
+    active: false
+    rationale: "Aggregator, depends on original source"
+    api_required: true
+    note: "Disabled at v1; enable in Tier 2"
+  
+  - id: dehashed
+    name: "DeHashed"
+    category: enrichment
+    grade_facts: B
+    grade_attribution: F
+    active: false
+    rationale: "Breach data is real, recency/accuracy varies"
+    api_required: true
+    note: "Disabled at v1; enable in Tier 2"
+
+# ============================================================================
+# First-Party Telemetry (highest grade for attribution-to-environment)
+# ============================================================================
+first_party_sources:
+  - id: splunk-archimedes
+    name: "Archimedes Splunk index"
+    category: first_party
+    grade_facts: A
+    grade_attribution: A
+    active: true
+    rationale: "First-party observation on your network"
+    host: localhost
+    index: archimedes
+  
+  - id: splunk-defenseclaw
+    name: "DefenseClaw via Splunk"
+    category: first_party
+    grade_facts: A
+    grade_attribution: A
+    active: true
+    rationale: "First-party observation on your network"
+    host: localhost
+    index: defenseclaw_local
+
+# ============================================================================
+# X / Twitter (via RSS bridges)
+# ============================================================================
+social_x_sources:
+  - id: x-cisagov
+    name: "CISA (@CISAgov)"
+    category: social
+    grade: A
+    active: true
+    rationale: "Official government channel"
+    account: CISAgov
+  
+  - id: x-gossithedog
+    name: "Kevin Beaumont (@GossiTheDog)"
+    category: social
+    grade: B
+    active: true
+    rationale: "Well-known, usually right, occasionally early/unconfirmed"
+    account: GossiTheDog
+  
+  - id: x-swiftonsecurity
+    name: "SwiftOnSecurity"
+    category: social
+    grade: B
+    active: true
+    rationale: "Strong signal, trusted voice, sometimes satirical"
+    account: SwiftOnSecurity
+  
+  - id: x-vxunderground
+    name: "vx-underground"
+    category: social
+    grade: C
+    active: true
+    rationale: "Valuable malware/actor content but sensationalized at times"
+    account: vxunderground
+  
+  - id: x-falconfeedsio
+    name: "FalconFeeds.io"
+    category: social
+    grade: C
+    active: true
+    rationale: "Fast ransomware/dark web feed, limited vetting"
+    account: FalconFeedsIO
+  
+  - id: x-unknown-researchers
+    name: "Unknown/new researcher accounts (dynamic)"
+    category: social
+    grade: F
+    active: false
+    rationale: "No track record yet — assess per-item"
+  
+  - id: x-anonymous-claims
+    name: "Anonymous threat claims on X (dynamic)"
+    category: social
+    grade: E
+    active: false
+    rationale: "Assume unreliable until corroborated"
+
+# ============================================================================
+# YouTube (via API)
+# ============================================================================
+youtube_sources:
+  - id: yt-mandiant
+    name: "Mandiant / Google Cloud Security"
+    category: youtube
+    grade: A
+    active: true
+    rationale: "Same credibility as written reports"
+    channel: "GoogleCloudTech"
+  
+  - id: yt-cisagov
+    name: "CISA"
+    category: youtube
+    grade: A
+    active: true
+    rationale: "Official government channel"
+    channel: "CISAgov"
+  
+  - id: yt-crowdstrike
+    name: "CrowdStrike"
+    category: youtube
+    grade: A
+    active: true
+    channel: "crowdstrike"
+  
+  - id: yt-john-hammond
+    name: "John Hammond"
+    category: youtube
+    grade: B
+    active: true
+    rationale: "Technically strong, educational focus"
+    channel: "_JohnHammond"
+  
+  - id: yt-simply-cyber
+    name: "Simply Cyber"
+    category: youtube
+    grade: B
+    active: true
+    rationale: "CTI methodology content"
+    channel: "SimplyCyber"
+  
+  - id: yt-blackhat
+    name: "Black Hat"
+    category: youtube
+    grade: B
+    active: true
+    rationale: "Peer-reviewed conference content"
+    channel: "BlackHatOfficialYT"
+  
+  - id: yt-defcon
+    name: "DEF CON"
+    category: youtube
+    grade: B
+    active: true
+    channel: "DEFCONConference"
+  
+  - id: yt-adam-goss
+    name: "Adam Goss"
+    category: youtube
+    grade: B
+    active: true
+    rationale: "CTI practitioner, methodologically sound"
+    channel: "AdamGoss"
+
+# ============================================================================
+# OSINT / Open Web
+# ============================================================================
+osint_sources:
+  - id: iran-monitor
+    name: "Iran Monitor"
+    category: osint
+    grade: C
+    active: true
+    rationale: "Useful Iran-focused tracking but agenda/bias possible — cross-reference"
+    urls:
+      - https://www.iranmonitor.org/
+  
+  - id: cyberwarrior76
+    name: "CyberWarrior76 (Substack)"
+    category: osint
+    grade: C
+    active: true
+    rationale: "Structured reports with MITRE mappings, but not primary source"
+    urls:
+      - https://cyberwarrior76.substack.com/
+  
+  - id: dark-web-leak-sites
+    name: "Dark web forums / leak sites (monitoring only)"
+    category: osint
+    grade: D
+    active: false
+    rationale: "Occasionally accurate, often exaggerated — monitor, don't act"
+    note: "Deferred from v1; requires Tor-isolated subagent"
+  
+  - id: pastebin-dumps
+    name: "Pastebin / anonymous dumps"
+    category: osint
+    grade: E
+    active: false
+    rationale: "Assume unreliable unless corroborated by A/B source"
+  
+  - id: telegram-unverified
+    name: "New/unverified Telegram channels"
+    category: osint
+    grade: F
+    active: false
+    rationale: "Unknown track record"
+
+# ============================================================================
+# Summary counts (agent-queryable)
+# ============================================================================
+_meta:
+  # NOTE: raw counts below have been drifting (beyondtrust-psirt landed 2026-07-07 without a count bump); treat as approximate. 2026-07-07 "process all" handoff batch added +3 sources, all operator-ratified in the same pass per Ryan approval: checkpoint-research (A) + kevintel (B) + canadian-centre-cyber-security (B); first_cited finding-2026-07-06-0001 / finding-2026-07-06-flash-1629-0001.
+  total_sources: 100       # +3 2026-07-07 batch above (checkpoint-research + kevintel + canadian-centre-cyber-security). +2 AM 2026-06-16: defused-cyber (provisional B; research-firm IR vendor — Fortinet FortiSandbox active-exploitation observation channel) + genians-security-center (provisional A; regional-IR-vendor — Korean-headquartered with deep DPRK visibility; APT37 NarwhalRAT primary); 72h ratification clocks to 2026-06-19T08:00:00-04:00 per findings 0002 / 0003. +5 PM 2026-06-12: sonatype-research + sygnia-research + tenet-security-research + dataminr-research + bloomberg (provisional B x5; bloomberg pending operator B/B+/A tier decision); 72h ratification clocks to 2026-06-15T16:00:00-04:00 per findings 0003 / 0004 / 0005 / 0007 / 0008 (+8 PM 2026-06-11; +2 AM 2026-06-10)
+  active_sources: 92       # +1 proofpoint (provisional A 2026-07-08 PM; finding-2026-07-08-0001); +3 2026-07-07 batch (checkpoint-research + kevintel + canadian-centre-cyber-security); +2 above (+5 PM 2026-06-12; +8 PM 2026-06-11; +2 AM 2026-06-10)
+  by_grade:
+    A: 43       # +1 proofpoint (provisional A 2026-07-08 PM; Tier-1 vendor-research peer per SentinelLabs precedent; finding-2026-07-08-0001); +1 checkpoint-research (A, ratified 2026-07-07); +1 genians-security-center (provisional A 2026-06-16 morning; regional-IR-vendor cheatsheet pattern peer-class to Mandiant/Unit42/CrowdStrike for DPRK/Korea-Asia); +3 europol-coordinated-announcement + doj-federal-court-filings + trendai-zdi-childs (provisional A 2026-06-11 PM); +2 ivanti-psirt + arista-networks-psirt (provisional A 2026-06-10 AM); +1 litespeed-blog-self-disclosure (provisional A 2026-05-23 FLASH)
+    B: 42       # +2 2026-07-07 batch (kevintel dual-grade A/F overall-B, ratified; canadian-centre-cyber-security B, ratified); +1 defused-cyber (provisional B 2026-06-16 morning; research-firm cheatsheet pattern — IR vendor observation channel); +5 sonatype-research + sygnia-research + tenet-security-research + dataminr-research + bloomberg (provisional B 2026-06-12 PM; bloomberg pending operator B/B+/A); +5 vulncheck-research + tenable-research + prodaft-research + blackfog-research + will-dormann-researcher (provisional B 2026-06-11 PM); +2 securityaffairs + theregister (provisional B 2026-05-29 morning)
+    C: 10       # +1 depthfirst elevated F→C 2026-05-16 morning per "first technical write-up publication" trigger; finding-2026-05-16-0001
+    D: 1
+    E: 2
+    F: 3        # -1 depthfirst (elevated to C 2026-05-16 morning)
+  awaiting_ratification:
+    - rapid7
+    - securityweek
+    - sentinelone
+    - layerx
+    - abw                       # provisional B; first cited 2026-05-08-0009
+    - seqrite-labs              # provisional C; first cited 2026-05-08-0010
+    - trendyol-group-albayrak   # provisional C; first cited 2026-05-10-0001
+    - wiz-research              # provisional A; first cited 2026-05-12-FLASH-0001
+    - snyk                      # provisional A; first cited 2026-05-12-FLASH-0001
+    - stepsecurity              # provisional B; first cited 2026-05-12-FLASH-0001
+    - semgrep                   # provisional B; first cited 2026-05-12-FLASH-0001
+    - onapsis                   # provisional B; first cited 2026-05-12-FLASH-0001
+    - aikido-security           # provisional C; first cited 2026-05-12-FLASH-0001
+    - safedep                   # provisional C; first cited 2026-05-12-FLASH-0001
+    - bitdefender               # provisional A; first cited 2026-05-13-FLASH-0001
+    - symantec                  # provisional A; first cited 2026-05-13-FLASH-1800-0001 (72h ratification clock to 2026-05-16T18:25:00-04:00)
+    - industrialcyber-co        # provisional B with relay-layer-conflation-observed-2026-05-13 caveat; first cited 2026-05-13-FLASH-1800-0001
+    - f5                        # provisional A; first cited 2026-05-14-0002 (K000160932 NGINX Rift vendor self-disclosure)
+    - kernel-org-netdev         # provisional A; first cited 2026-05-14-0003 (Fragnesia kernel patch upstream maintainer self-disclosure)
+    - sysdig                    # provisional B; first cited 2026-05-14-0004 (PraisonAI CVE-2026-44338 scanner detection)
+    - zellic                    # provisional B; first cited 2026-05-14-0003 (Fragnesia PoC by William Bowling)
+    - thehackernews             # provisional B; second-cross-corroboration-cycle (multiple prior relay surfaces; first cited as scored entity 2026-05-14)
+    - depthfirst                # provisional C (elevated F→C 2026-05-16 morning per "first technical write-up publication" trigger); first cited 2026-05-14-0002 (THN editorial chain); re-surfaced as named PoC author 2026-05-16-0001 (SecurityWeek-attested GitHub PoC for CVE-2026-42945)
+    - cisco-talos               # provisional A; first cited 2026-05-14-0005 (Cisco Catalyst SD-WAN CVE-2026-20182 UAT-8616 active-exploitation)
+    - darktrace                 # provisional A; first cited 2026-05-14-0007 (Twill Typhoon / Mustang Panda APAC + Japan campaign with FDMTP RAT)
+    - socket                    # provisional B; first cited 2026-05-14-0009 (node-ipc 3 backdoored versions, UNATTRIBUTED — co-primary with StepSecurity)
+    - openai-self-disclosure    # provisional A; first cited 2026-05-14-0008 (OpenAI TanStack breach self-disclosure, first named-enterprise-victim on VT-006)
+    - ox-security               # provisional B; first cited 2026-05-15-0005 (node-ipc four-firm UNATTRIBUTED consensus, via BleepingComputer relay — awaiting direct retrieval)
+    - upwind                    # provisional B; first cited 2026-05-15-0005 (node-ipc four-firm UNATTRIBUTED consensus, via BleepingComputer relay — awaiting direct retrieval)
+    - zdi-blog                  # provisional A; first cited 2026-05-16-0002 (Pwn2Own Berlin 2026 Day 3 wrap and Master of Pwn — Dustin Childs byline; vendor authority on own contest analogous to F5 vendor self-disclosure precedent)
+    - github-blog-self-disclosure  # provisional A; first cited 2026-05-20-FLASH-0001 (GitHub self-disclosure of ~3,800-repo breach via poisoned VS Code marketplace extension; 72h ratification clock to 2026-05-23T06:08:00-04:00; awaiting direct-retrieval of github.blog primary URL)
+    - cisco-psirt               # provisional A; first cited 2026-05-20-0006 (Cisco Secure Workload CVE-2026-20223 CVSS 10.0 pre-auth REST API auth bypass; cisco-sa-csw-pnbsa-g8WEnuy advisory; distinct from cisco-talos — PSIRT publishes Cisco-product CVE advisories, Talos publishes external threat research; 72h ratification clock to 2026-05-23T16:00:00-04:00)
+    - aonan-guan                # provisional C; first cited 2026-05-20-0007 (Anthropic Claude Code SOCKS5 hostname null-byte sandbox bypass; independent researcher disclosure via HackerOne; cited via SecurityWeek; LayerX / Albayrak / Seqrite precedent — conservative C starting grade pending direct write-up retrieval + second-source corroboration)
+    - litespeed-blog-self-disclosure  # provisional A; first cited 2026-05-23-FLASH-0002 (LiteSpeed User-End cPanel Plugin CVE-2026-48172 vendor self-disclosure with vendor-confirmed active exploitation; lsws.redisAble root RCE from any cPanel user; v2.4.5/v2.4.7 patches shipped; 72h ratification clock to 2026-05-26T06:35:00-04:00)
+    - securityaffairs           # provisional B; first cited 2026-05-29-0002 (Chaotic Eclipse state-transition MSRC relay paired with The Register; resolved PM-28 single-source veto on the ITW exploitation claim per AM-29 grader supersession)
+    - theregister               # provisional B; first cited 2026-05-29-0002 (Chaotic Eclipse state-transition MSRC relay paired with Security Affairs; contributed Childs/Moussouris industry commentary under Hard Rule 6 quote discipline)
+    - palo-alto-psirt           # provisional A; first cited 2026-05-29-0004 (CVE-2026-0257 PAN-OS GlobalProtect auth bypass — vendor self-attestation on own product co-primary with Rapid7 + CISA KEV; resolves 2026-05-06 deferred-id source-grade-log entry; precedent class: Cisco PSIRT, F5 PSIRT, kernel.org netdev, OpenAI/GitHub/LiteSpeed self-disclosure; 72h ratification clock to 2026-06-01T16:00:00-04:00)
+    - push-security             # provisional B; first cited 2026-05-29-0005 (LLMShare malvertising campaign on chatgpt.com/s/ shared-link URL abuse; co-primary with Permiso Security on paired ChatGPT platform-abuse research class; cited via BleepingComputer; awaiting direct-retrieval of pushsecurity.com/blog primary; peer class: StepSecurity, Socket, Sysdig, Zellic, Ox Security, Upwind, Arctic Wolf; 72h ratification clock to 2026-06-01T16:00:00-04:00)
+    - permiso-security          # provisional B; first cited 2026-05-29-0005 (ChatGPhish vulnerability class — ChatGPT renderer trusts Markdown from summarized pages; co-primary with Push Security on paired ChatGPT platform-abuse research class; cited via The Hacker News; awaiting direct-retrieval of permiso.io primary; peer class: StepSecurity, Socket, Sysdig, Zellic, Ox Security, Upwind, Arctic Wolf, Push Security; 72h ratification clock to 2026-06-01T16:00:00-04:00)
+    - ivanti-psirt              # provisional A; first cited 2026-06-10-0003 (Ivanti Sentry CVE-2026-10520 CVSS 10.0 OS command injection + CVE-2026-10523 CVSS 9.9 auth bypass; both pre-auth RCE; patched at disclosure 2026-06-09; vendor attests no customer exploitation observed under Hard Rule 6; vendor-self-disclosure-on-own-product precedent class per F5 / Cisco / kernel.org / OpenAI / GitHub / LiteSpeed / Palo Alto PSIRT; 72h ratification clock to 2026-06-13T08:00:00-04:00)
+    - arista-networks-psirt     # provisional A; first cited 2026-06-10-0004 (Arista EOS CVE-2026-7473 CISA KEV federal deadline 2026-06-23 — UNUSUAL DISPOSITION: vendor refuses to ship patch, provides mitigation instructions instead; first-of-its-kind in corpus; vendor-attested ITW; same vendor-self-disclosure-on-own-product precedent class; 72h ratification clock to 2026-06-13T08:00:00-04:00)
+    - europol-coordinated-announcement  # provisional A; first cited 2026-06-11-0011 (AudiA6 crypto-laundering service takedown — 11-country Europol operation, Tkachuk + Ledenev charged + Telegram blocked + >$380M laundered linked to 15+ international ransomware investigations; awaiting direct-retrieval of europol.europa.eu/media-press/newsroom primary; 72h ratification clock to 2026-06-14T16:00:00-04:00)
+    - doj-federal-court-filings  # provisional A; first cited 2026-06-11-0007 (DOJ indictment of Denis Obrezko, Russian national, for Void Blizzard infrastructure-provider role; Boston federal court appearance 2026-06-10; awaiting direct-retrieval of justice.gov primary; 72h ratification clock to 2026-06-14T16:00:00-04:00; /new-actor Void Blizzard DEFERRED pending DOJ-primary retrieval)
+    - trendai-zdi-childs        # provisional A; first cited 2026-06-11-0006 (Oracle PeopleSoft CVE-2026-35273 — Dustin Childs of Trend Micro ZDI, reporter-credit holder on Oracle's out-of-band advisory, characterized exploitation as 'limited' in The Register; independent of Mandiant / ShinyHunters chain; distinct from existing zdi-blog entry — operator decides consolidate-or-keep-distinct; 72h ratification clock to 2026-06-14T16:00:00-04:00)
+    - vulncheck-research        # provisional B; first cited 2026-06-11-0008 (Langflow CVE-2026-5027 CVSS 8.8 path-traversal RCE in-the-wild + ~7,000 internet-exposed instances skewed to North America; single-source veto bound on the ITW claim per Trigger-1 doctrine; 72h ratification clock to 2026-06-14T16:00:00-04:00)
+    - tenable-research          # provisional B; first cited 2026-06-11-0008 (Langflow CVE-2026-5027 originally disclosed 2026-03-27 — upstream-vendor-research basis for VulnCheck's downstream ITW exploitation report; 72h ratification clock to 2026-06-14T16:00:00-04:00)
+    - prodaft-research          # provisional B; first cited 2026-06-11-0009 (The Gentlemen / Storm-2697 / LARVA-368 / Phantom Mantis — names Yapaev as prior LockBit / Qilin / Medusa affiliate before transitioning to independent operator July 2025; 478 claimed victims; Mantis-suffix actor designations are PRODAFT's house naming convention; 72h ratification clock to 2026-06-14T16:00:00-04:00)
+    - blackfog-research         # provisional B; first cited 2026-06-11-0010 (OnyxC2 MaaS credential-stealer commoditization watchlist — $250/mo / $500/mo HVNC / $6,000 source-code; 210+ application targets; zero VT detections across 71 engines on 2026-05-30 initial upload; two publisher-side relays no publisher independence on underlying claims; 72h ratification clock to 2026-06-14T16:00:00-04:00)
+    - will-dormann-researcher   # provisional B; first cited 2026-06-11-0012 (Nightmare Eclipse GreatXML claimed BitLocker bypass — Dormann publicly reported he cannot reproduce; methodological corrective against single-researcher zero-day claims absent vendor confirmation; CERT/CC pedigree + multi-year track record support starting above the unknown-researcher C floor; 72h ratification clock to 2026-06-14T16:00:00-04:00)
+    - sonatype-research         # provisional B; first cited 2026-06-12-0005 (400+ AUR packages hijacked — Atomic Arch Rust credential stealer + eBPF rootkit; two-wave maintainer-account adoption; 8 credential categories targeted; IOCs SHA-256 + atomic-lockfile/js-digest npm + temp.sh + Tor onion; relayed via BleepingComputer + The Hacker News; 72h ratification clock to 2026-06-15T16:00:00-04:00)
+    - sygnia-research           # provisional B; first cited 2026-06-12-0004 (Velvet Ant China-nexus PAM + OpenSSH backdoor on air-gapped East Asia victim with ~10-year dwell since 2016; 9 PAM-module variants + OpenSSH logging credentials/typed commands + operator-side disable switch; THN relay only — Sygnia primary NOT directly retrieved this sweep; 72h ratification clock to 2026-06-15T16:00:00-04:00; awaiting direct retrieval AND human ratification)
+    - tenet-security-research   # provisional B; first cited 2026-06-12-0007 Part A (Agentjacking — 85% success rate injecting malicious instructions into fabricated Sentry error events against Claude Code + Cursor; 2,388 orgs with exploitable DSNs; Sentry declined to patch behavior — content filter only; cited via The Hacker News; Tenet primary NOT directly retrieved; 72h ratification clock to 2026-06-15T16:00:00-04:00; awaiting direct retrieval AND human ratification)
+    - dataminr-research         # provisional B; first cited 2026-06-12-0003 (Handala #014 Cal Water self-claim — Dataminr identifies RTKBase as likely initial-access vector with lateral move to billing; analysis cited via SecurityWeek; RTKBase-IAV layer carries single-source veto WEP 'possibly' carry-forward into Handala dossier deferred to actor-profiler; 72h ratification clock to 2026-06-15T16:00:00-04:00)
+    - bloomberg                 # provisional B PENDING OPERATOR TIER DECISION B/B+/A; first cited 2026-06-12-0008 (IBM + AT&T whistleblower civil-suit unsealing — William Barlow's 2020 qui tam alleges IBM/AT&T concealed federal-contractor breaches; DFARS / CMMC L2/L3 / FCA exposure; Bloomberg broke 2026-06-04, cited via SecurityWeek's In Other News column; conservative B start pending operator decision between AP wire-service A precedent and Tier-1 trade-press B precedent; 72h ratification clock to 2026-06-15T16:00:00-04:00)
+    - defused-cyber             # provisional B; first cited 2026-06-16-0002 (Fortinet FortiSandbox three-CVE active-exploitation cluster — CVE-2026-25089 + CVE-2026-39813 + CVE-2026-39808 all CVSS 9.1; Defused Cyber observation channel cited via BleepingComputer + The Hacker News publisher-independent relays; research-firm cheatsheet pattern — IR vendor providing exploitation observation distinct from vendor PSIRT advisory layer; Defused is sole IR-vendor source on active-exploitation claim layer triggering single-source veto on ITW assertion per INTEL-GRADING; 72h ratification clock to 2026-06-19T08:00:00-04:00; awaiting human ratification AND independent corroboration from second IR vendor — Mandiant / Unit 42 / CrowdStrike / Recorded Future — or first-party Splunk hit for ITW veto release)
+    - genians-security-center   # provisional A; first cited 2026-06-16-0003 (APT37 / ScarCruft net-new NarwhalRAT tooling deployment via Microsoft-account-themed phishing → ZIP → LNK → in-memory CAT-file → pCloud dead-drop C2 → Naver Whale browser masquerade; Genians Security Center is Korean-headquartered regional IR vendor with deep DPRK-cluster visibility; regional-IR-vendor cheatsheet pattern — peer class to Mandiant / Unit 42 / CrowdStrike for DPRK/Korea-Asia threat intel; provisional A starting grade is consistent with peer regional IR vendors despite first-corpus citation; 72h ratification clock to 2026-06-19T08:00:00-04:00; awaiting human ratification AND direct retrieval of genians.co.kr primary write-up — substrate reached this sweep via The Hacker News (Ravie Lakshmanan) publisher relay only)
+    - beyondtrust-psirt         # provisional A; first cited 2026-07-07-0001 (BeyondTrust RS/PRA four-CVE disclosure — CVE-2026-40138/40139 critical CVSS 9.2 pre-auth auth bypasses + CVE-2026-40140 DoS + CVE-2026-40141 authz-scope bypass; fixed 25.3.3/26.2.1; no ITW, no attribution; vendor-self-disclosure-on-own-product precedent class per Cisco/F5/Ivanti/Palo Alto/Arista PSIRT; relay-only via BleepingComputer, advisory page returned HTTP 403 to WebFetch — NVD enrichment anchor; awaiting human ratification AND direct retrieval of beyondtrust.com/trust-center/security-advisories primary)
+    - proofpoint                # provisional A; first cited 2026-07-08-0001 (UNK_MassTraction Roundcube-webmail espionage vs academic + national-security research; sole effective primary on campaign + LOW-confidence China-aligned attribution; Tier-1 vendor-research peer to SentinelLabs/Mandiant/Unit42/CrowdStrike/MSTIC per SentinelLabs 2026-05-08 precedent; relay-only via BleepingComputer/Bill Toulas — Proofpoint primary NOT directly retrieved; awaiting human ratification AND direct retrieval of proofpoint.com/us/blog/threat-insight primary)
+  ratified_from_provisional:
+    # Provisional entries operator-ratified without full conversion to the Sophos/ESET/Dragos ratified form
+    # (provisional_reason rationale retained; awaiting_ratification flipped to false + ratified_by/ratified_at stamped).
+    # awaiting_direct_retrieval left intact where set — that is a collection todo, not a grade blocker.
+    - source_id: checkpoint-research           # A; ratified_by ryan 2026-07-07; first cited finding-2026-07-06-0001
+    - source_id: kevintel                      # B (dual A/F); ratified_by ryan 2026-07-07; first cited finding-2026-07-06-flash-1629-0001
+    - source_id: canadian-centre-cyber-security # B; ratified_by ryan 2026-07-07; first cited finding-2026-07-06-flash-1629-0001 (BeyondTrust RS/PRA four-CVE disclosure — CVE-2026-40138/40139 critical CVSS 9.2 pre-auth auth bypasses + CVE-2026-40140 DoS + CVE-2026-40141 authz-scope bypass; fixed 25.3.3/26.2.1; no ITW, no attribution; vendor-self-disclosure-on-own-product precedent class per Cisco/F5/Ivanti/Palo Alto/Arista PSIRT; relay-only via BleepingComputer, advisory page returned HTTP 403 to WebFetch — NVD enrichment anchor; awaiting human ratification AND direct retrieval of beyondtrust.com/trust-center/security-advisories primary)
+  review_schedule:
+    next_review: 2026-07-18
+    review_interval_days: 90

@@ -1,0 +1,488 @@
+# scripts/run_phase.ps1 — Headless Claude Code invocation wrapper for the
+# Archimedes scheduled brief / FLASH alert pipeline.
+#
+# Called by Windows Task Scheduler at the 8 daily firing times defined in
+# CLAUDE.md "Daily Rhythm". Each scheduled task passes a different -Phase.
+# This script picks the right prompt, invokes `claude -p` headlessly with
+# permission bypass (required for unattended runs), tees stdout to a log
+# file under logs/scheduler/, and emits a structured event to Splunk
+# bracketing the run so failures are queryable.
+#
+# Production phases (all 8 firings from CLAUDE.md):
+#   pre-brief-morning       07:30 EDT  — collector pre-brief sweep
+#   morning-brief           08:00 EDT  — full brief pipeline
+#   alert-sweep-noon        12:00 EDT  — FLASH sweep
+#   pre-brief-afternoon     15:30 EDT  — collector pre-brief sweep
+#   afternoon-brief         16:00 EDT  — full brief pipeline
+#   alert-sweep-evening     18:00 EDT  — FLASH sweep
+#   alert-sweep-midnight    00:00 EDT  — FLASH sweep (queues if outside 9am-9pm)
+#   alert-sweep-dawn        06:00 EDT  — FLASH sweep (queues)
+#
+# Test phase (Session 7 development only — not scheduled in production):
+#   smoke-test  — minimal `claude -p "Reply OK"` to verify wrapper plumbing.
+#
+# Usage:
+#   .\scripts\run_phase.ps1 -Phase smoke-test
+#   .\scripts\run_phase.ps1 -Phase morning-brief
+#
+# Exit codes:
+#   0  Success (claude -p returned 0)
+#   2  Configuration error (bad phase, missing claude CLI)
+#   3  Splunk pre-log failed (run aborted to preserve invariant: every run logged)
+#   non-zero  Whatever claude -p returned
+
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory=$true)]
+    [ValidateSet(
+        'pre-brief-morning',
+        'morning-brief',
+        'alert-sweep-noon',
+        'pre-brief-afternoon',
+        'afternoon-brief',
+        'alert-sweep-evening',
+        'alert-sweep-midnight',
+        'alert-sweep-dawn',
+        'smoke-test'
+    )]
+    [string]$Phase,
+
+    # If set, wrapper skips claude -p and only validates plumbing
+    # (path resolution, log dir creation, Splunk roundtrip). Useful for
+    # CI or "did the scheduler fire at all" checks without API spend.
+    [switch]$DryRun
+)
+
+$ErrorActionPreference = 'Stop'
+
+# Phase -> prompt mapping. Short prompts; trust the orchestrator to
+# consult CLAUDE.md and follow doctrine. See docs/handoffs/session-7-prep.md
+# for the rationale on prompt brevity.
+# All production prompts include the test-fixture exclusion clause so
+# unattended runs operate only on real signal. Test fixtures are
+# left in place (they have ttl_expires_at and test: true frontmatter)
+# but never propagate to briefs or Discord. Discovered Session 8
+# Stage G: orchestrator otherwise stops to ask which signal to use.
+$TestExclusion = ' Skip any raw-signal, findings, or briefs marked test: true.'
+
+$PhasePrompts = @{
+    'pre-brief-morning'    = 'Pre-brief COLLECTION ONLY for 08:00 morning brief. Invoke the collector subagent only — do NOT invoke grader, analyst, red-team-analyst, briefer, or librarian. Output: raw-signal files written to threats/raw-signal/ per the collector subagent definition. Do NOT grade, do NOT promote findings, do NOT compose any brief, do NOT post to Discord, do NOT commit, do NOT update _coverage-log.yaml. The 08:00 morning-brief phase consumes your raw-signal output and runs the rest of the pipeline. Return after raw-signal files are written.' + $TestExclusion
+    'morning-brief'        = 'Run the 08:00 morning brief pipeline per CLAUDE.md. Grade, analyze, brief, deliver.' + $TestExclusion
+    'alert-sweep-noon'     = 'Run a FLASH alert sweep per doctrine/FLASH-POLICY.md. Exit silently if no triggers.' + $TestExclusion
+    'pre-brief-afternoon'  = 'Pre-brief COLLECTION ONLY for 16:00 afternoon brief. Invoke the collector subagent only — do NOT invoke grader, analyst, red-team-analyst, briefer, or librarian. Output: raw-signal files written to threats/raw-signal/ per the collector subagent definition. Do NOT grade, do NOT promote findings, do NOT compose any brief, do NOT post to Discord, do NOT commit, do NOT update _coverage-log.yaml. The 16:00 afternoon-brief phase consumes your raw-signal output and runs the rest of the pipeline. Return after raw-signal files are written.' + $TestExclusion
+    'afternoon-brief'      = 'Run the 16:00 afternoon brief pipeline per CLAUDE.md. Grade, analyze, brief, deliver.' + $TestExclusion
+    'alert-sweep-evening'  = 'Run a FLASH alert sweep per doctrine/FLASH-POLICY.md. Exit silently if no triggers.' + $TestExclusion
+    'alert-sweep-midnight' = 'Run a FLASH alert sweep per doctrine/FLASH-POLICY.md. Quiet hours active - queue any triggers.' + $TestExclusion
+    'alert-sweep-dawn'     = 'Run a FLASH alert sweep per doctrine/FLASH-POLICY.md. Quiet hours active - queue any triggers.' + $TestExclusion
+    'smoke-test'           = 'Reply with the literal string OK and nothing else.'
+}
+
+# Resolve repo root from this script's location (scripts/ -> ..)
+$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+
+# Build log paths
+$Now = Get-Date
+$DateStr = $Now.ToString('yyyy-MM-dd')
+$TimeStr = $Now.ToString('HHmm')
+$RunId = "$Phase-$($Now.ToString('yyyyMMdd-HHmmss'))"
+$LogDir = Join-Path $RepoRoot "logs/scheduler/$DateStr"
+$LogFile = Join-Path $LogDir "$Phase-$TimeStr.log"
+New-Item -ItemType Directory -Force -Path $LogDir | Out-Null
+
+# Helper: emit an event to Splunk via the splunk-log hook.
+# Returns $true on success, $false on failure. We check the return so
+# the wrapper can preserve the invariant "every scheduled run is
+# recorded in Splunk" — if pre-logging fails, the run aborts.
+#
+# Implementation note (PS 5.1 quirks):
+#   - Native-exe stdin piping is unreliable in PS 5.1; use a temp file
+#     and pass --event-file instead.
+#   - Do NOT redirect native-exe stderr with 2>&1 — it wraps each line
+#     in NativeCommandError and trips $ErrorActionPreference=Stop.
+function Send-SplunkEvent {
+    param([hashtable]$EventData)
+    $json = $EventData | ConvertTo-Json -Compress -Depth 5
+    $tmp = New-TemporaryFile
+    # UTF-8 WITHOUT BOM — Python's json.loads rejects a BOM as invalid.
+    # The default UTF8Encoding ([System.Text.Encoding]::UTF8) writes a
+    # BOM, so we construct one explicitly.
+    $utf8NoBom = New-Object System.Text.UTF8Encoding $false
+    [System.IO.File]::WriteAllText($tmp.FullName, $json, $utf8NoBom)
+    Push-Location $RepoRoot
+    try {
+        & uv run python scripts/splunk_log.py --event-file $tmp.FullName --sourcetype 'archimedes:scheduler' --quiet
+        return ($LASTEXITCODE -eq 0)
+    } finally {
+        Pop-Location
+        Remove-Item $tmp.FullName -Force -ErrorAction SilentlyContinue
+    }
+}
+
+# Helper: post an operator alert to a Discord channel via discord_post.py.
+# Returns $true on success, $false on any failure. Always non-fatal — a
+# down Discord must never abort the wrapper or clobber the phase exit code.
+# Uses --message-file (not stdin) per the PS 5.1 stdin-piping quirk, and
+# does NOT use 2>&1 on the native exe (NativeCommandError under Stop).
+function Send-DiscordAlert {
+    param(
+        [string]$Message,
+        [string]$Channel = 'commands'
+    )
+    $tmp = New-TemporaryFile
+    $utf8NoBom = New-Object System.Text.UTF8Encoding $false
+    [System.IO.File]::WriteAllText($tmp.FullName, $Message, $utf8NoBom)
+    Push-Location $RepoRoot
+    try {
+        & uv run python scripts/discord_post.py --channel $Channel --message-file $tmp.FullName --quiet
+        return ($LASTEXITCODE -eq 0)
+    } catch {
+        return $false
+    } finally {
+        Pop-Location
+        Remove-Item $tmp.FullName -Force -ErrorAction SilentlyContinue
+    }
+}
+
+# Helper: run the deterministic delivery catch-up (scripts/deliver_catchup.py).
+# Delivers any brief that was committed via [DEGRADED-RECOVERY] but never posted
+# to Discord (the usage-limit case). Costs ZERO model tokens, so it works even
+# while the limit is still blocking claude -p. Returns a hashtable with the
+# parsed delivered/error lists so the caller can soften the failure alert.
+# Runs on every phase: a clean phase finds nothing (introducing commit is a
+# normal "Publish ..." not DEGRADED-RECOVERY) and no-ops. Non-fatal; never
+# uses 2>&1 on the native exe (NativeCommandError under Stop).
+function Invoke-DeliveryCatchup {
+    param([string]$RunIdArg)
+    $result = @{ delivered_count = 0; error_count = 0; delivered_ids = @(); raw = '' }
+    Push-Location $RepoRoot
+    try {
+        $out = & uv run python scripts/deliver_catchup.py --run-id $RunIdArg
+        $jsonLine = $out | Where-Object { $_ -match '^\s*\{' } | Select-Object -Last 1
+        if ($jsonLine) {
+            $result.raw = $jsonLine
+            try {
+                $parsed = $jsonLine | ConvertFrom-Json
+                $result.delivered_count = @($parsed.delivered).Count
+                $result.error_count = @($parsed.errors).Count
+                $result.delivered_ids = @($parsed.delivered | ForEach-Object { $_.brief_id })
+            } catch { }
+        }
+    } catch {
+        # PS-level exception (uv not found, etc.) — non-fatal.
+    } finally {
+        Pop-Location
+    }
+    return $result
+}
+
+# Helper: pre-flight health check of the claude CLI's OAuth credential.
+# The wrapper authenticates via the Max-subscription login token in
+# ~/.claude/.credentials.json, NOT an API key. When that access token expires
+# AND the stored refresh token is empty, the CLI cannot self-refresh and every
+# `claude -p` returns 401 - silently, for days, across all 8 phases. That is
+# exactly the 2026-06-20 outage: token expired 00:00 EDT, refreshToken blank,
+# ~58h of dead phases before a human noticed. This detects that unrecoverable
+# state so we page the operator with an actionable "/login" alert instead of
+# letting the phase die with a generic "pipeline died" message.
+#
+# Returns a hashtable: @{ ok = <bool>; reason = '<string>' }
+#   ok=$true  -> proceed (token valid, still refreshable, or state unreadable)
+#   ok=$false -> abort: token expired with no refresh token. reason is
+#                operator-facing text for the Discord page.
+# Fails OPEN on any read/parse error and on non-OAuth (API-key) setups - a
+# working-but-unusual credential must never block a run; only a definitively
+# dead OAuth token aborts.
+function Test-ClaudeAuth {
+    $credPath = Join-Path $env:USERPROFILE '.claude\.credentials.json'
+    if (-not (Test-Path $credPath)) {
+        return @{ ok = $false; reason = 'No credential file at ~/.claude/.credentials.json - the claude CLI is not logged in.' }
+    }
+    try {
+        $cred = Get-Content -Raw -Path $credPath | ConvertFrom-Json
+    } catch {
+        # Unreadable / malformed cred file - fail open, do not block the run.
+        return @{ ok = $true; reason = 'cred-file-unparseable-failopen' }
+    }
+    $oauth = $cred.claudeAiOauth
+    if ($null -eq $oauth) {
+        # Not an OAuth login (e.g. ANTHROPIC_API_KEY mode) - nothing to check.
+        return @{ ok = $true; reason = 'no-oauth-block-failopen' }
+    }
+    $nowMs = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
+    $expiresAt = 0
+    if ($oauth.expiresAt) { $expiresAt = [int64]$oauth.expiresAt }
+    $noRefresh = [string]::IsNullOrEmpty([string]$oauth.refreshToken)
+    $expired = ($expiresAt -gt 0) -and ($expiresAt -lt $nowMs)
+    if ($expired -and $noRefresh) {
+        $expUtc = ([DateTimeOffset]::FromUnixTimeMilliseconds($expiresAt)).UtcDateTime.ToString('yyyy-MM-dd HH:mm') + ' UTC'
+        return @{ ok = $false; reason = "OAuth access token expired $expUtc and the stored refresh token is empty - the CLI cannot self-refresh. Run /login on the host to restore." }
+    }
+    return @{ ok = $true; reason = 'ok' }
+}
+
+# --- Pre-flight: log "started" event ---
+$startEvent = @{
+    run_id     = $RunId
+    phase      = $Phase
+    status     = 'started'
+    started_at = $Now.ToString('o')
+    log_file   = $LogFile
+    dry_run    = $DryRun.IsPresent
+}
+$preLogged = Send-SplunkEvent -EventData $startEvent
+if (-not $preLogged) {
+    # Use direct stderr write — Write-Error becomes terminating under
+    # $ErrorActionPreference=Stop and would clobber our exit code.
+    [Console]::Error.WriteLine("[run_phase.ps1] Splunk pre-log failed. Aborting run to preserve audit-trail invariant.")
+    exit 3
+}
+
+# --- DryRun short-circuit ---
+if ($DryRun) {
+    Write-Output "[run_phase.ps1] DryRun: phase=$Phase repo=$RepoRoot log=$LogFile"
+    $endEvent = @{
+        run_id       = $RunId
+        phase        = $Phase
+        status       = 'completed'
+        exit_code    = 0
+        duration_sec = 0
+        dry_run      = $true
+    }
+    [void](Send-SplunkEvent -EventData $endEvent)
+    exit 0
+}
+
+# --- Pre-flight: claude CLI auth health ---
+# Catch the expired-token / empty-refresh-token state BEFORE the doomed
+# claude -p call, so the operator gets one actionable page per phase instead of
+# a generic "pipeline died" (or, for sweeps, total silence). Per-phase paging is
+# intentional: it mirrors the existing failure-alert cadence and the whole point
+# is to make a multi-day 401 outage visible immediately. Fails open on any
+# ambiguity (see Test-ClaudeAuth) so it can never block an otherwise-healthy run.
+$auth = Test-ClaudeAuth
+if (-not $auth.ok) {
+    $authMsg = "Archimedes AUTH FAILURE - phase '$Phase' (run $RunId) skipped. " +
+        "The claude CLI credential is dead: $($auth.reason) " +
+        "Every scheduled phase will keep failing with 401 until you re-login. Log: $LogFile"
+    [void](Send-DiscordAlert -Message $authMsg -Channel 'commands')
+    [Console]::Error.WriteLine("[run_phase.ps1] auth pre-flight FAILED: $($auth.reason)")
+    $utf8NoBomAuth = New-Object System.Text.UTF8Encoding $false
+    [System.IO.File]::AppendAllText($LogFile, "[run_phase.ps1] auth pre-flight FAILED: $($auth.reason)`r`n", $utf8NoBomAuth)
+    $endEvent = @{
+        run_id         = $RunId
+        phase          = $Phase
+        status         = 'failed'
+        exit_code      = 2
+        duration_sec   = 0
+        failure_reason = 'auth_expired'
+        auth_detail    = $auth.reason
+    }
+    [void](Send-SplunkEvent -EventData $endEvent)
+    exit 2
+}
+
+# --- Invoke claude -p ---
+$Prompt = $PhasePrompts[$Phase]
+$StartTime = Get-Date
+
+Push-Location $RepoRoot
+try {
+    # Stream claude's stdout: append each line to the log AND pass it
+    # through so Task Scheduler / interactive callers see it live.
+    # PS 5.1 quirks handled here:
+    #   - Tee-Object has no -Encoding param (UTF-16 LE BOM default),
+    #     and Add-Content -Encoding UTF8 still writes a BOM. Use
+    #     [System.IO.File]::AppendAllText with explicit no-BOM UTF-8.
+    #   - We do NOT use 2>&1 — that wraps native-exe stderr in
+    #     NativeCommandError under $ErrorActionPreference=Stop.
+    # Stderr flows naturally to the parent process and is captured
+    # separately by Task Scheduler.
+    $utf8NoBomLog = New-Object System.Text.UTF8Encoding $false
+    # Pipe $null in so claude doesn't wait 3s for stdin data and emit
+    # "no stdin data received" warnings. Equivalent to bash `< /dev/null`.
+    $null | & claude -p $Prompt `
+        --output-format text `
+        --permission-mode bypassPermissions `
+        | ForEach-Object {
+            [System.IO.File]::AppendAllText($LogFile, "$_`r`n", $utf8NoBomLog)
+            Write-Output $_
+        }
+
+    $ClaudeExit = $LASTEXITCODE
+} finally {
+    Pop-Location
+}
+
+$EndTime = Get-Date
+$DurationSec = [int](($EndTime - $StartTime).TotalSeconds)
+
+# --- Brief-phase completion check + degraded-recovery commit ---
+# A brief phase that dies mid-pipeline (e.g. org usage limit hit before the
+# librarian commits) leaves the brief + findings + raw-signal UNTRACKED on
+# disk. The catchup `git push` below is a no-op on untracked files, so the
+# corpus is silently stranded — exactly the 2026-05-21 morning incident.
+#
+# For the two brief phases we use an OUTPUT-based success criterion, not the
+# exit code alone: success means "the expected brief file exists AND is
+# committed clean". If the brief is uncommitted, we auto-commit the day's
+# corpus with a [DEGRADED-RECOVERY] marker (NEVER posted to Discord — a human
+# reviews before any ship). If gitleaks or another pre-commit hook blocks the
+# recovery commit, it stays orphaned but the operator alert below still fires.
+#
+# Telemetry: brief_committed / recovery_commit_exit / alert_sent feed the
+# completed event so dashboards can see incomplete brief phases.
+$RecoveryCommit = $null   # $null = not attempted; 0 = ok; non-zero = commit blocked/failed
+$AlertNeeded = $false
+$AlertReason = $null
+$BriefType = $null
+if ($Phase -eq 'morning-brief')   { $BriefType = 'morning' }
+if ($Phase -eq 'afternoon-brief') { $BriefType = 'afternoon' }
+
+if ($BriefType) {
+    $BriefRel = "threats/briefs/$DateStr-$BriefType.md"
+    $BriefAbs = Join-Path $RepoRoot $BriefRel
+    Push-Location $RepoRoot
+    try {
+        # Non-empty porcelain output => the brief file has uncommitted changes
+        # (untracked '??' or modified ' M'). Empty => committed clean or absent.
+        $briefStatus = & git status --porcelain -- $BriefRel
+        $briefUncommitted = [bool]$briefStatus
+        $briefExists = Test-Path $BriefAbs
+
+        if ($briefUncommitted) {
+            # Orphaned brief on disk — stage today's corpus and commit with marker.
+            $recoveryPaths = @($BriefRel)
+            Get-ChildItem -Path (Join-Path $RepoRoot 'threats/findings') -Filter "finding-$DateStr-*.md" -ErrorAction SilentlyContinue |
+                ForEach-Object { $recoveryPaths += "threats/findings/$($_.Name)" }
+            Get-ChildItem -Path (Join-Path $RepoRoot 'threats/raw-signal') -Filter "raw-$DateStr-*.md" -ErrorAction SilentlyContinue |
+                ForEach-Object { $recoveryPaths += "threats/raw-signal/$($_.Name)" }
+            foreach ($idx in @('threats/briefs/_coverage-log.yaml', 'threats/briefs/_rejection-log.yaml')) {
+                if (& git status --porcelain -- $idx) { $recoveryPaths += $idx }
+            }
+
+            & git add -- $recoveryPaths
+            $commitMsg = "[DEGRADED-RECOVERY] brief: $DateStr $BriefType - pipeline did not commit`n`n" +
+                "The $BriefType brief phase ended with claude -p exit=$ClaudeExit but left the brief " +
+                "and its corpus uncommitted on disk (librarian phase did not complete - usage limit, " +
+                "transport error, or interrupted run). run_phase.ps1 auto-committed the day's corpus " +
+                "for audit completeness.`n`nNOT posted to Discord. Review before any manual ship; the " +
+                "brief frontmatter may say status: published optimistically.`n`nRun id: $RunId`n`n" +
+                "Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
+            & git commit -m $commitMsg | ForEach-Object { $_ }
+            $RecoveryCommit = $LASTEXITCODE
+            $AlertNeeded = $true
+            $AlertReason = if ($RecoveryCommit -eq 0) {
+                "Orphaned corpus auto-committed (DEGRADED-RECOVERY) - review before manual ship."
+            } else {
+                "Auto-recovery commit FAILED (exit=$RecoveryCommit, likely a blocked pre-commit hook) - corpus is still ORPHANED on disk, manual recovery needed."
+            }
+        } elseif (-not $briefExists -and $ClaudeExit -ne 0) {
+            $AlertNeeded = $true
+            $AlertReason = "Pipeline died before the briefer wrote a brief - no corpus to recover."
+        } elseif ($ClaudeExit -ne 0) {
+            # Brief committed clean but claude still reported a non-zero exit.
+            $AlertNeeded = $true
+            $AlertReason = "Brief is committed but the phase reported exit=$ClaudeExit - inspect the log for a post-commit failure."
+        }
+    } finally {
+        Pop-Location
+    }
+}
+
+# --- Delivery catch-up: ship any recovered-but-unposted brief to Discord ---
+# Deterministic (zero model tokens), so it works even while the usage limit
+# is still blocking claude -p. Runs on EVERY phase; a clean phase no-ops.
+# Placed BEFORE the catchup push so the delivery marker commits get pushed too.
+# This is what closes the loop on the usage-limit incident: the [DEGRADED-
+# RECOVERY] commit above lands the brief in git; this posts its Layer 2 to
+# #intel-briefs the same run.
+$DeliveryResult = Invoke-DeliveryCatchup -RunIdArg $RunId
+$utf8NoBomDelivLog = New-Object System.Text.UTF8Encoding $false
+[System.IO.File]::AppendAllText($LogFile, "[run_phase.ps1] delivery catchup: delivered=$($DeliveryResult.delivered_count) errors=$($DeliveryResult.error_count) ids=$($DeliveryResult.delivered_ids -join ',')`r`n", $utf8NoBomDelivLog)
+
+# Did THIS phase's brief get delivered by the catch-up just now? Used to soften
+# the failure alert below from "NOT posted" to "auto-delivered late".
+$CurrentBriefDelivered = $false
+if ($BriefType) {
+    $thisBriefId = "$DateStr-$BriefType"
+    if ($DeliveryResult.delivered_ids -contains $thisBriefId) { $CurrentBriefDelivered = $true }
+}
+
+# --- Catchup push: ensure any commits the librarian made are on origin/main ---
+# The librarian's `git push` step (Mode 1 procedure step 8) is empirically
+# non-deterministic — Wed 2026-05-06 auto-pushed all 6 phases cleanly, Tue
+# afternoon and Thu morning held 1-2 commits without explanation despite
+# identical doctrine. This wrapper-level push is belt-and-suspenders:
+#   - If the librarian already pushed, `git push` is a no-op ("Everything
+#     up-to-date") and exit 0
+#   - If the librarian held, this catches up before the next phase fires
+#   - Push failure (network, auth) is non-fatal — claude phase itself
+#     succeeded, commits stay local until next phase or operator catches up
+# Telemetry: catchup_push_exit field added to the completed event so dash-
+# board panels can surface push reliability without guessing.
+$PushExit = 0
+Push-Location $RepoRoot
+try {
+    # Do NOT use 2>&1 here. git push prints "Everything up-to-date" to stderr,
+    # PS 5.1 wraps that as NativeCommandError under $ErrorActionPreference=Stop,
+    # and we'd misreport a clean no-op as exit=-1. Let stderr flow to parent;
+    # Task Scheduler captures both streams. We only care about the exit code.
+    & git push origin main | ForEach-Object {
+        # stdout lines (rare for git push) get appended to our log
+        $_
+    }
+    $PushExit = $LASTEXITCODE
+} catch {
+    # Reachable only on PS-level exceptions (cmd not found, etc.) — not git
+    # exit codes. -2 is distinct from -1 (the prior bug's signature) so any
+    # leftover -1 in old Splunk events is unambiguously the old bug.
+    $PushExit = -2
+} finally {
+    Pop-Location
+}
+
+# Append push result to log file (visible in interactive runs and Task Scheduler captures)
+$utf8NoBomPushLog = New-Object System.Text.UTF8Encoding $false
+[System.IO.File]::AppendAllText($LogFile, "`r`n[run_phase.ps1] catchup push exit=$PushExit`r`n", $utf8NoBomPushLog)
+
+# --- Operator alert: page the commands channel on an incomplete brief phase ---
+# Only brief phases set $AlertNeeded (above). Non-fatal: a Discord failure
+# here must not change the phase exit code. The recovery commit (if any) has
+# already been pushed by the catchup step, so the alert can point at git.
+$AlertSent = $null   # $null = not attempted
+if ($AlertNeeded) {
+    # If the catch-up already shipped this brief's Layer 2, the alert is an FYI,
+    # not a fire drill — say so. Otherwise keep the strong "NOT posted" warning.
+    if ($CurrentBriefDelivered) {
+        $deliveryLine = "**Layer 2 was auto-delivered late to #intel-briefs** by the delivery catch-up (corpus committed via DEGRADED-RECOVERY). Review the recovery commit; no manual post needed."
+    } else {
+        $deliveryLine = "**The brief was NOT posted to #intel-briefs.**"
+    }
+    $alertMsg = ":red_circle: **Archimedes pipeline FAILURE** - $BriefType brief ($DateStr)`n" +
+        "Phase '$Phase' ended with exit=$ClaudeExit. $deliveryLine`n" +
+        "$AlertReason`n" +
+        "Run id: $RunId`n" +
+        "Log: $LogFile"
+    $AlertSent = Send-DiscordAlert -Message $alertMsg -Channel 'commands'
+    [System.IO.File]::AppendAllText($LogFile, "[run_phase.ps1] failure alert sent=$AlertSent current_brief_delivered=$CurrentBriefDelivered reason=$AlertReason`r`n", $utf8NoBomPushLog)
+}
+
+# --- Post-flight: log "completed" event ---
+$endEvent = @{
+    run_id              = $RunId
+    phase               = $Phase
+    status              = if ($ClaudeExit -eq 0) { 'completed' } else { 'failed' }
+    exit_code           = $ClaudeExit
+    duration_sec        = $DurationSec
+    log_file            = $LogFile
+    catchup_push_exit   = $PushExit
+    recovery_commit_exit = $RecoveryCommit
+    alert_sent          = $AlertSent
+    alert_reason        = $AlertReason
+    catchup_delivered_count = $DeliveryResult.delivered_count
+    catchup_error_count = $DeliveryResult.error_count
+    current_brief_delivered = $CurrentBriefDelivered
+}
+[void](Send-SplunkEvent -EventData $endEvent)
+
+exit $ClaudeExit

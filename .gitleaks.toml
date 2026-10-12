@@ -1,0 +1,64 @@
+# Gitleaks configuration for Archimedes.
+#
+# Extends the default gitleaks ruleset. The default ruleset is opinionated
+# about high-entropy strings and frequently false-positives on CTI-specific
+# identifiers (CVE IDs, MITRE ATT&CK technique IDs, finding IDs with high
+# digit entropy, hash IOCs documented as IOCs not as secrets, etc.).
+#
+# This allowlist is conservative — it only carves out patterns that are
+# structurally identifiable as CTI-corpus content, never broad enough to
+# mask an actual API key or credential.
+#
+# Reference: https://github.com/gitleaks/gitleaks/blob/master/config/gitleaks.toml
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Archimedes CTI-corpus identifiers that gitleaks default rules false-positive on"
+
+regexes = [
+  # CVE identifiers — five digits in the suffix can hit entropy threshold
+  # (e.g. CVE-2026-41957 detected as generic-api-key on 2026-05-14 commit).
+  # CVE format is fixed: CVE-YYYY-NNNN through NNNNNNN.
+  '''CVE-\d{4}-\d{4,7}''',
+
+  # MITRE ATT&CK technique IDs — T1234 / T1234.567 / G1234 / S1234 / M1234.
+  '''(?:T|G|S|M)\d{4}(?:\.\d{3})?''',
+
+  # Finding IDs in Archimedes corpus — finding-YYYY-MM-DD-NNNN or
+  # finding-YYYY-MM-DD-FLASH-NNNN.
+  '''finding-\d{4}-\d{2}-\d{2}-(?:FLASH-)?\d{4}''',
+
+  # Run IDs in Archimedes telemetry — phase-YYYYMMDD-HHMMSS or
+  # subagent-YYYYMMDD-HHMMSS form.
+  '''(?:librarian|grader|analyst|red-team|briefer|collector|actor-profiler|vuln-tracker|morning|afternoon|pre-brief|flash|sweep)-\d{8}-\d{6}''',
+
+  # Market-segment descriptor in CTI prose ("consumer/SMB WordPress, no A&D
+  # relevance") — the slash-joined token hit the generic-api-key entropy
+  # threshold on the 2026-05-21 sentinel sweep. Benign English, not a credential.
+  '''consumer/SMB''',
+
+  # MSTIC-published X-Secret IOC from 2026-05-29 npm dependency-confusion
+  # campaign blog post (33 malicious npm packages, oob.moika.tech C2). The
+  # X-Secret header value is a documented IOC the adversary uses to gate
+  # their C2 endpoint — Microsoft published it for defender detection. Not
+  # an Archimedes credential. Tripped generic-api-key entropy 4.5 on the
+  # 2026-05-30 0000 FLASH sweep raw-signal commit.
+  '''l95HdDaz3kQx1Zsg3WxH6HvKANf51RY1''',
+
+  # Benign English noun "cryptocurrency" — 14-char English word that hit
+  # gitleaks default linkedin-client-id rule's entropy threshold (2.985)
+  # on the 2026-06-11 morning brief commit when contextualized in CTI
+  # tradecraft prose ("AI-generated personas, LinkedIn recruitment,
+  # cryptocurrency payment"). Standard English vocabulary; not a credential.
+  # Case-insensitive to also cover "Cryptocurrency" sentence-start usage.
+  '''(?i)cryptocurrency''',
+]
+
+paths = [
+  # CTI corpus content — IOCs, hashes, malware family names, and adversary
+  # tradecraft details documented here are by design indexable / shareable.
+  # They are NOT credentials. The pre-commit hook should still scan these
+  # files, but the regexes above carve out CTI identifier patterns.
+  # No path-level exclusions at this time — keep gitleaks scanning content.
+]

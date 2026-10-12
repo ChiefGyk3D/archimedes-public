@@ -1,0 +1,559 @@
+# threats/threat-actors/_roster.yaml
+#
+# Master list of all tracked threat actors.
+# Migrated from C3PO intel-repository — 22 actors as of Session 1.
+#
+# The collector and grader read this file to resolve actor aliases during
+# raw signal processing. The briefer uses it to link actor references to
+# their profile directories.
+#
+# Adding a new actor requires /new-actor command, which triggers:
+#   1. Human approval
+#   2. Initial profile stub
+#   3. Roster entry here
+#   4. First-pass profile within 7 days
+#   5. Threat-box scoring within 14 days (human sign-off for HIGH)
+
+version: 2
+last_updated: 2026-08-12        # First-pass profile + initial scoring for Cl0p (#018) — on-demand "extensive Cl0p profile" build. Full dossier (profile.md/iocs.md/iocs.yaml/threat-box.yaml/threat-box.md) created for the pre-existing HIGH placeholder stub; scored weighted 4.6 -> MEDIUM (auto-commit w/ notification), supply_chain category HIGH (composite 8) primary vector; placeholder HIGH replaced. Hard Rule 5 gate did NOT fire. Prior: /new-actor Pioneer Kitten (#029) — net-new roster actor (roster max prior #028 CyberAv3ngers); Iran IRGC-linked state-intelligence + access-broker/ransomware-enabler dual-track (Fox Kitten/UNC757/Parisite/RUBIDIUM/Lemon Sandstorm, MITRE G0117); first-pass profile + initial scoring; weighted 5.5 → MEDIUM (auto-commit, notification; espionage category HIGH composite 8 = primary_threat_vector; only roster Iranian actor with a genuine cyber-crime/ransomware-enablement dimension; Intent held at Ideology=4, no A&D prime named; confidence A2 single-originating-US-gov-primary AA24-241A pending direct retrieval + vendor/FortiGuard identity corroboration; Hard Rule 5 gate did NOT fire; ASA/Cotton-Sandstorm explicitly NON-merged). Prior: /new-actor CyberAv3ngers (#028) — net-new roster actor; IRGC-CEC OT/ICS attack group; first-pass profile + initial scoring; weighted 4.2 → LOW (auto-commit; multi-A-grade A1; DISRUPTIVE category HIGH composite 8 is primary vector — LOW overall is a weighting artifact NOT low risk); Hard Rule 5 gate did NOT fire. Prior: First-pass build of Handala Hack (#014) — pre-existing "profile pending" stub filled in place — MEDIUM (auto-commit, weighted 5.45); replaces never-scored placeholder HIGH. Single-origin CPR (A2) on persona attribution; UNIQUE among roster Iran-MOIS actors with a per-category Destructive HIGH (composite 9: custom wiper arsenal + demonstrated Stryker Intune MDM mass-wipe). Hard Rule 5 gate did NOT fire. Follows /new-actor Peach Sandstorm (#027) 2026-07-12 — MEDIUM (weighted 5.5); /new-actor Cavern Manticore (#026) 2026-07-07 — LOW (weighted 3.25)
+source_target_profile: ad-prime-v1        # per THREAT-BOX-METHODOLOGY.md
+
+actors:
+  - id: "001"
+    primary_name: "TeamPCP"
+    aliases: []
+    attribution:
+      nation: unknown
+      service: null
+    type: "Cybercriminal"
+    threat_level: HIGH
+    tracked_since: 2026-03-18
+    dossier: threats/threat-actors/TeamPCP/
+    last_reviewed: 2026-03-18
+    next_review_due: 2026-06-16
+
+  - id: "002"
+    primary_name: "Stardust Chollima"
+    aliases: [BlueNoroff, APT38, Sapphire Sleet, CopperCore Chollima]
+    attribution:
+      nation: KP
+      service: "DPRK State (financial)"
+    type: "Nation-State / Financial APT"
+    threat_level: HIGH
+    tracked_since: 2026-03-18
+    dossier: threats/threat-actors/Stardust-Chollima/
+    last_reviewed: 2026-03-18
+    next_review_due: 2026-06-16
+
+  - id: "003"
+    primary_name: "Lazarus Group"
+    aliases: [Hidden Cobra, Zinc, Diamond Sleet, Labyrinth Chollima, Guardians of Peace]
+    attribution:
+      nation: KP
+      service: "Reconnaissance General Bureau"
+    type: "Nation-State APT"
+    threat_level: HIGH
+    tracked_since: 2026-04-01
+    dossier: threats/threat-actors/Lazarus-Group/
+    last_reviewed: 2026-04-01
+    next_review_due: 2026-06-30
+
+  - id: "004"
+    primary_name: "UNC1549"
+    aliases: [Tortoiseshell, Smoke Sandstorm, Imperial Kitten, Crimson Sandstorm]
+    attribution:
+      nation: IR
+      service: IRGC
+    type: "Nation-State APT"
+    threat_level: MEDIUM         # weighted overall 5.4 (MEDIUM) per /update-tracking 2026-05-09; espionage category HIGH (composite 10)
+    tracked_since: 2026-04-02
+    dossier: threats/threat-actors/UNC1549/
+    last_reviewed: 2026-05-09
+    next_review_due: 2026-08-07
+    note: "First-pass profile created 2026-05-06 from finding-2026-05-05-0001 (Mandiant 2026-05-04 expansion). Initial threat-box scoring 2026-05-09 via /update-tracking (Mode 2): weighted 5.4 → MEDIUM → auto-commit. Espionage category alone is HIGH (composite 10) on direct A&D-prime targeting; non-espionage categories at floor dilute via doctrine weighting. Splunk first-party check zero hits over -30d at scoring time."
+
+  - id: "005"
+    primary_name: "GlassWorm"
+    aliases: []
+    attribution:
+      nation: unknown
+      service: null
+    type: "Cybercriminal"
+    threat_level: HIGH
+    tracked_since: 2026-04-02
+    dossier: threats/threat-actors/GlassWorm/
+    last_reviewed: 2026-04-02
+    next_review_due: 2026-07-01
+
+  - id: "006"
+    primary_name: "APT28"
+    aliases:
+      - Fancy Bear
+      - Forest Blizzard
+      - Sofacy
+      - Sednit
+      - Pawn Storm
+      - STRONTIUM
+      - FROZENLAKE
+      - BlueDelta
+      - Fighting Ursa
+      - Iron Twilight
+      - GruesomeLarch
+      - UAC-0001
+      - TG-4127
+      - Tsar Team
+      - Group 74
+    attribution:
+      nation: RU
+      service: GRU
+      unit: "Unit 26165 (85th GTsSS)"
+    type: "Nation-State APT"
+    threat_level: HIGH
+    tracked_since: 2026-04-03
+    dossier: threats/threat-actors/APT28/
+    last_reviewed: 2026-04-03
+    next_review_due: 2026-07-02
+    mitre_attack_id: G0007
+
+  - id: "007"
+    primary_name: "Sandworm"
+    aliases: [APT44, Seashell Blizzard, Iron Viking, BlackEnergy Group, Telebots, Voodoo Bear]
+    attribution:
+      nation: RU
+      service: GRU
+      unit: "Unit 74455 (Main Centre for Special Technologies)"
+    type: "Nation-State APT"
+    threat_level: HIGH
+    tracked_since: 2026-04-04
+    dossier: threats/threat-actors/Sandworm/
+    last_reviewed: 2026-04-04
+    next_review_due: 2026-07-03
+
+  - id: "008"
+    primary_name: "Volt Typhoon"
+    aliases: [Vanguard Panda, BRONZE SILHOUETTE, Insidious Taurus, DEV-0391]
+    attribution:
+      nation: CN
+      service: "PLA"
+    type: "Nation-State APT"
+    threat_level: HIGH
+    tracked_since: 2026-04-05
+    dossier: threats/threat-actors/Volt-Typhoon/
+    last_reviewed: 2026-04-05
+    next_review_due: 2026-07-04
+
+  - id: "009"
+    primary_name: "APT29"
+    aliases: [Cozy Bear, The Dukes, NOBELIUM, Midnight Blizzard, UNC2452, Iron Hemlock, Cloaked Ursa, BlueBravo]
+    attribution:
+      nation: RU
+      service: SVR
+    type: "Nation-State APT"
+    threat_level: HIGH
+    tracked_since: 2026-04-06
+    dossier: threats/threat-actors/APT29/
+    last_reviewed: 2026-04-06
+    next_review_due: 2026-07-05
+
+  - id: "010"
+    primary_name: "Salt Typhoon"
+    aliases: [GhostEmperor, FamousSparrow, UNC2286, Earth Estries]
+    attribution:
+      nation: CN
+      service: MSS
+    type: "Nation-State APT"
+    threat_level: HIGH
+    tracked_since: 2026-04-07
+    dossier: threats/threat-actors/Salt-Typhoon/
+    last_reviewed: 2026-04-07
+    next_review_due: 2026-07-06
+
+  - id: "011"
+    primary_name: "Charming Kitten"
+    aliases: [APT35, Magic Hound, Mint Sandstorm, Phosphorus, Newscaster, Ajax Security Team, Yellow Garuda]
+    attribution:
+      nation: IR
+      service: "IRGC-IO"
+    type: "Nation-State APT"
+    threat_level: LOW            # weighted overall 4.45 (LOW) per /update-tracking 2026-05-09; espionage category HIGH (composite 9). Intent=4 Ideology bound by red-team qualify directive — no A-grade source documents prime-direct targeting required for Intent=5.
+    tracked_since: 2026-04-08
+    dossier: threats/threat-actors/Charming-Kitten/
+    last_reviewed: 2026-05-09
+    next_review_due: 2026-08-07
+    mitre_attack_id: G0059
+    note: "First-pass profile created 2026-05-06 from finding-2026-05-05-0002 (CrowdStrike + MSTIC concurrent A1 attribution). Threat-box scoring 2026-05-09 via /update-tracking (Mode 2): weighted 4.45 → LOW → auto-commit. Espionage composite 9 (category HIGH) but weighted overall LOW because Intent=4 (Ideology) — bound by red-team qualify directive — keeps Espionage from ceiling 10, and four floor categories dilute via doctrine weighting. Operator-anticipated HIGH did NOT materialize; the disciplined Intent=4 outcome is the qualify directive doing what it was meant to do. Splunk first-party zero hits over -30d at scoring time."
+
+  - id: "012"
+    primary_name: "Miyako"
+    aliases: []
+    attribution:
+      nation: unknown
+      service: null
+    type: "Initial Access Broker"
+    threat_level: HIGH
+    tracked_since: 2026-04-08
+    dossier: threats/threat-actors/Miyako/
+    last_reviewed: 2026-04-08
+    next_review_due: 2026-07-07
+
+  - id: "013"
+    primary_name: "Scattered Spider"
+    aliases: [UNC3944, Octo Tempest, 0ktapus, Scatter Swine, Muddled Libra, Starfraud]
+    attribution:
+      nation: unknown
+      service: null
+    type: "Cybercriminal"
+    threat_level: HIGH
+    tracked_since: 2026-04-09
+    dossier: threats/threat-actors/Scattered-Spider/
+    last_reviewed: 2026-04-09
+    next_review_due: 2026-07-08
+
+  - id: "014"
+    primary_name: "Handala Hack"
+    aliases: [Void Manticore, Storm-0842, DEV-0842, Red Sandstorm, Banished Kitten]
+    attribution:
+      nation: IR
+      service: MOIS
+    type: "Nation-State / Hacktivist"
+    threat_level: MEDIUM         # weighted overall 5.45 (MEDIUM) per first-pass /new-actor build 2026-07-12; Destructive category HIGH (composite 9) is the primary_threat_vector. Replaces the never-scored placeholder HIGH.
+    tracked_since: 2026-07-12
+    dossier: threats/threat-actors/Handala-Hack/
+    last_reviewed: 2026-07-12
+    next_review_due: 2026-10-10
+    mitre_attack_id: G1055
+    note: "First-pass profile + initial scoring created 2026-07-12 via /new-actor-style targeted dossier build for the pre-existing 'profile pending' stub (roster stub predated the build — carried as a #actor-review watch-list entry; tracked_since set to the first substantive tracking date 2026-07-12, prior pending-stub status noted). Built from collector raw-signal raw-2026-07-12-handala-newactor-001/-002. SINGLE ORIGINATING PRIMARY: Check Point Research (CPR 2024 'Bad Karma, No Justice' — Void Manticore = MOIS; CPR 2026 'Handala Hack — Unveiling Group's Modus Operandi' — Handala persona operated by Void Manticore). The Hacker News is a pure relay; MITRE G1055 is a structured second MOIS statement with unadjudicated independence-vs-CPR-derivation; Microsoft Storm-0842/DEV-0842 primary pending_direct_retrieval. Hard Rule 2 BINDING: all attribution inherits from cited sources; Void Manticore <-> Scarred Manticore (Storm-0861) recorded as a CPR-stated target HAND-OFF / collaboration, NOT a merge; related_actors [022,023,026] are Iranian-MOIS analytic peers, not merges. Aliases extended with CPR-named Red Sandstorm + Banished Kitten (both also in MITRE G1055 association list). Threat-box weighted 5.45 -> MEDIUM -> auto-commit; Hard Rule 5 gate did NOT fire. UNIQUE among roster Iran-MOIS actors: per-category Destructive HIGH (composite 9) on custom wiper arsenal (BiBi/Cl Wiper/partition/Handala Wiper) + demonstrated Stryker Intune MDM mass-wipe (200k+ devices, 79 countries, ~2026-03-11 — first US-enterprise expansion); MEDIUM overall is a weighting artifact, NOT low risk (parallels UNC1549 espionage-10/overall-MEDIUM). Espionage MEDIUM (7), Disruptive MEDIUM (5), Supply Chain LOW (3), Cyber-Crime LOW (2). A&D-prime relevance INDIRECT/STRUCTURAL — Intune/MDM mass-wipe TTP portable to large ITAR enterprise + hack-and-leak posture; NO A&D prime named, so Intent held at Ideology (4) not Target-Specific (5) per evidence-minimum table + directive. IOCs folded: 9 operator IPs (2 VT-confirmed higher-confidence: 64.176.169.22, 82.25.35.25; 7 lower-confidence reported-not-VT-checked). Wiper hash VALUES held pending_direct_retrieval (garbled on WebFetch; VT found:false) — families recorded as tooling, hashes NOT folded. CVEs by ID only (none attributed); no credentials stored (Hard Rule 7). Splunk first-party 0 hits over -90d on all 9 IPs (visibility-bounded null, no bonus). STANDING CAVEAT: CPR single-origin on persona attribution — lift/revise on independent second-IR-vendor confirmation or Microsoft Storm-0842 primary retrieval; destructive-capability facts more broadly corroborated (BiBi widely documented, MITRE cluster tooling, Stryker drew Krebs + relays)."
+
+  - id: "015"
+    primary_name: "LockBit"
+    aliases: ["LockBit 2.0", "LockBit 3.0", "LockBit Black", "LockBit Green", "LockBit Red"]
+    attribution:
+      nation: RU
+      service: null
+    type: "Cybercriminal (RaaS)"
+    threat_level: HIGH
+    tracked_since: 2026-04-11
+    dossier: threats/threat-actors/LockBit/
+    last_reviewed: 2026-04-11
+    next_review_due: 2026-07-10
+
+  - id: "016"
+    primary_name: "REvil"
+    aliases: [Sodinokibi, Pinchy Spider, GOLD SOUTHFIELD]
+    attribution:
+      nation: RU
+      service: null
+    type: "Cybercriminal (RaaS)"
+    threat_level: MEDIUM
+    tracked_since: 2026-04-12
+    dossier: threats/threat-actors/REvil/
+    last_reviewed: 2026-04-12
+    next_review_due: 2026-07-11
+    note: "Disrupted 2022, occasional resurgence claims — historical tracking"
+
+  - id: "017"
+    primary_name: "APT40"
+    aliases: [Leviathan, TEMP.Jumper, Bronze Mohawk, Gingham Typhoon, TEMP.Periscope]
+    attribution:
+      nation: CN
+      service: MSS
+    type: "Nation-State APT"
+    threat_level: HIGH
+    tracked_since: null
+    dossier: threats/threat-actors/APT40/
+    last_reviewed: null
+    next_review_due: 2026-04-25
+    note: "Profile pending — tracked via #actor-review, not yet reviewed"
+
+  - id: "018"
+    primary_name: "Cl0p"
+    aliases:
+      - CL0P
+      - Clop
+      - TA505              # Proofpoint (parent financial-crime cluster)
+      - FIN11             # Mandiant / Google Threat Intelligence Group
+      - GRACEFUL SPIDER   # CrowdStrike
+      - GOLD TAHOE        # Secureworks (Cl0p); GOLD EVERGREEN = wider TA505 parent
+      - Lace Tempest      # Microsoft (current)
+      - DEV-0950          # Microsoft (former)
+      - Spandex Tempest   # Microsoft (Cl0p ransomware element)
+      - UNC4857           # Mandiant (MOVEit exploitation cluster; merged into FIN11)
+    attribution:
+      nation: RU          # Russian-speaking / CIS-based criminal cluster — NOT a state actor
+      service: null
+    type: "Cybercriminal (RaaS / data-theft extortion)"
+    threat_level: MEDIUM         # weighted overall 4.6 (MEDIUM) per first-pass /new-actor-style scoring 2026-08-12; supply_chain category HIGH (composite 8) is the primary_threat_vector. Replaces the never-scored placeholder HIGH.
+    tracked_since: 2026-04-14
+    dossier: threats/threat-actors/Cl0p/
+    last_reviewed: 2026-08-12
+    next_review_due: 2026-11-10
+    mitre_attack_id: null        # Clop malware = Software S0611; closest associated group = TA505 (G0092). No dedicated Cl0p group G-number.
+    note: >
+      First-pass profile + initial scoring created 2026-08-12 (operator Ryan, on-demand
+      "extensive Cl0p profile" build) for the pre-existing roster stub (#018, tracked since
+      2026-04-14; prior placeholder threat_level HIGH was never scored — replaced by scored
+      MEDIUM). ESTABLISHED campaign history graded A1 (multiple independent A-grade primaries:
+      CISA AA23-158A MOVEit, Google Threat Intelligence Group Oracle EBS + MOVEit/FIN11,
+      Microsoft Lace Tempest, Recorded Future Cleo): Accellion FTA 2020-21 (CVE-2021-27101..104,
+      DEWMODE, 300+ tenants) -> GoAnywhere MFT 2023 (CVE-2023-0669, ~130 victims) -> PaperCut
+      2023 (CVE-2023-27350) -> MOVEit Transfer 2023 (CVE-2023-34362, LEMURLOOT/human2.aspx,
+      ~2,700+ orgs, CISA AA23-158A, $10M RfJ) -> Cleo MFT 2024 (CVE-2024-50623 + -55956, 182+
+      victims) -> Oracle E-Business Suite 2025 (CVE-2025-61882 + -61884, GOLDVEIN.JAVA +
+      SAGEGIFT/SAGELEAF/SAGEWAVE, 29+ named victims incl. Envoy Air/Estée Lauder). HARD RULE 2
+      BINDING: "Cl0p" is a brand/franchise as much as a crew — GTIG assesses the CL0P DLS is
+      used by >=1 actor with different TTPs and did NOT formally attribute the 2025 Oracle EBS
+      campaign to a single group; attribution graded per-campaign, TA505/FIN11 lineage recorded
+      as Mandiant/GTIG's designation NOT an Archimedes origination. The single most A&D-relevant
+      surface — the 2026 PTC Windchill/FlexPLM campaign (CVE-2026-12569) — has CONFIRMED
+      exploitation (A1, CISA KEV 2026-06-25) but a SUSPECTED-ONLY Cl0p attribution (B3/possibly,
+      ReliaQuest/SecurityWeek 'unconfirmed'); FENCED throughout the dossier and NOT relied upon
+      for scoring (Archimedes ACH found the second source did not lift the tie; Cl0p-copycat
+      hypothesis ties at zero inconsistencies). Threat-box weighted 4.6 -> MEDIUM -> auto-commit
+      with notification; Hard Rule 5 gate did NOT fire. Supply_chain category HIGH (composite 8:
+      Intent=3 Sector + Cap=5 significant, Novelty=0 custom-per-platform-tooling) is the
+      primary_threat_vector; cyber_crime MEDIUM (7); espionage/destructive/disruptive LOW —
+      MEDIUM overall is a WEIGHTING ARTIFACT of the espionage-heavy (35%) methodology applied to
+      a pure criminal-extortion actor, NOT low risk (parallels UNC1549 espionage-HIGH/MEDIUM,
+      CyberAv3ngers disruptive-HIGH/LOW). HARD RULE 3: all CVEs by ID only. HARD RULE 7: no
+      credentials stored (extortion contact addresses support@pubstorm.com/.net [confirmed] and
+      support@cryptohox.com [suspected] are contacts, not creds). IOCs folded: 4 Oracle EBS IPs
+      (2 GOLDVEIN C2 + 2 exploitation-source), 2 pubstorm extortion emails, 10 malware/webshell
+      names (Clop/DEWMODE/LEMURLOOT/GOLDVEIN.JAVA/SAGE*), human2.aspx, 2 Oracle EBS endpoints,
+      13 CVEs by ID (11 confirmed + CVE-2026-12569 suspected + ZeroLogon historical). Splunk
+      first-party 2026-08-12: 0 hits in defenseclaw_local over -90d (19 hits were archimedes:
+      operation self-referential telemetry, excluded) — visibility-bounded null, no bonus.
+      related_actors [015,016,013,025] = RaaS / data-theft-extortion analytic peers NOT merges.
+      NEW SOURCE flags for librarian: reliaquest (provisional B, first surfaced finding-2026-07-24),
+      google-threat-intelligence-group / gtig (A, Oracle EBS primary) — open source-grades.yaml
+      entries if not present.
+    related_actors: ["015", "016", "013", "025"]   # RaaS / data-theft-extortion analytic peers — NOT attribution merges (Hard Rule 2)
+
+  - id: "019"
+    primary_name: "APT41"
+    aliases: [Double Dragon, Winnti, BARIUM, Brass Typhoon, Wicked Panda, HOODOO]
+    attribution:
+      nation: CN
+      service: MSS
+    type: "Nation-State APT + Cybercriminal"
+    threat_level: HIGH
+    tracked_since: 2026-04-15
+    dossier: threats/threat-actors/APT41/
+    last_reviewed: 2026-04-15
+    next_review_due: 2026-07-14
+
+  - id: "020"
+    primary_name: "BlackCat / ALPHV"
+    aliases: [Noberus, ALPHV, BlackCat]
+    attribution:
+      nation: unknown
+      service: null
+      note: "Russian-speaking per operational language"
+    type: "Cybercriminal (RaaS)"
+    threat_level: HIGH
+    tracked_since: null
+    dossier: threats/threat-actors/BlackCat/
+    last_reviewed: null
+    next_review_due: 2026-04-25
+    note: "Profile pending"
+
+  - id: "021"
+    primary_name: "Payouts King"
+    aliases: [PayoutsKing]
+    attribution:
+      nation: unknown
+      service: null
+    type: "Cybercriminal"
+    threat_level: HIGH
+    tracked_since: null
+    dossier: threats/threat-actors/Payouts-King/
+    last_reviewed: null
+    next_review_due: 2026-04-25
+    note: "Profile pending"
+
+  - id: "022"
+    primary_name: "MuddyWater"
+    aliases: [Mango Sandstorm, Static Kitten, Mercury, MERCURY, Seedworm, Earth Vetala, TEMP.Zagros, Boggy Serpens]
+    attribution:
+      nation: IR
+      service: MOIS
+    type: "Nation-State APT"
+    threat_level: LOW            # weighted overall 4.15 (LOW) per /update-tracking 2026-05-09; espionage category MEDIUM (composite 7). Intent=3 Sector Association bound by red-team qualify directive — Rapid7 names no A&D primes; historical MENA pattern is sector-shaped not target-specific. Capability=5 anchors on long-running multi-A-grade pre-2026 documentation, robust against 72h auto-downgrade clock fire on source finding.
+    tracked_since: 2026-05-06
+    dossier: threats/threat-actors/MuddyWater/
+    last_reviewed: 2026-05-09
+    next_review_due: 2026-08-07
+    mitre_attack_id: G0069
+    note: "First-pass profile created 2026-05-06 from finding-2026-05-06-FLASH-0002 (Rapid7 single-source veto, WEP likely, red-team qualify, 72h auto-downgrade clock). Threat-box scoring 2026-05-09 via /update-tracking (Mode 2): weighted 4.15 → LOW → auto-commit. Espionage composite 7 (category MEDIUM); four floor categories dilute via doctrine weighting. Hard Rule 5 gate did NOT fire. 72h clock fired ~2026-05-09 12:00 EDT with no independent A/B-grade corroboration (The Record / BleepingComputer / SecurityWeek all pure relay); single-source veto persists. Splunk first-party zero hits over -30d on 2026-05-09 PM sweep across 7 queryable IOCs. Per RETRACTION-POLICY source finding should auto-downgrade to C3 'possibly true' (librarian handoff). Scoring construction robust to the downgrade — Capability=5 anchors on pre-2026 multi-A-grade docs; Intent=3 anchors on historical MENA sector pattern."
+
+  - id: "023"
+    primary_name: "APT34"
+    aliases:
+      - OilRig
+      - Helix Kitten
+      - Cobalt Gypsy
+      - Crambus
+      - Hazel Sandstorm
+      - EUROPIUM
+      - IRN2
+      - ITG13
+      - Greenbug
+    attribution:
+      nation: IR
+      service: MOIS
+      unit: "ITSecTeam (per third-party reporting; not officially confirmed)"
+    type: "Nation-State APT"
+    threat_level: MEDIUM         # overall weighted 4.9 → MEDIUM (re-affirmed 2026-07-12 /update-tracking); per-category espionage HIGH (composite 8)
+    tracked_since: 2026-05-01
+    dossier: threats/threat-actors/APT34/
+    last_reviewed: 2026-07-12
+    next_review_due: 2026-10-10
+    mitre_attack_id: G0049
+    note: "Session 9 pre-work intake (initial MEDIUM 2026-05-01). 90-day /update-tracking refresh 2026-07-12 (dossier_version 2, scoring_version 2): threat box RE-AFFIRMED weighted 4.9 → MEDIUM, no category composite moved, Hard Rule 5 gate did NOT fire, auto-committed. Recorded the Oct-2024 Earth Simnavaz campaign (Trend Micro: StealHook Exchange-credential-theft backdoor + malicious password-filter DLL T1556.002 + CVE-2024-30088 privesc) — reinforces already-ceiling espionage Capability=5, no numeric change — and the Check Point Research Cavern Manticore (#026) tactical-overlap-to-Lyceum/OilRig note (CPR's assessment ONLY; NO attribution merge originated, Hard Rule 2). Splunk first-party categorical zero over -90d in defenseclaw_local (visibility-bounded null, no bonus). related_actors extended to include #026 (CPR overlap, non-merge) and #027 Peach Sandstorm (Iranian-nexus peer). RATIFICATION FOLD-IN 2026-07-12 (dossier_version 3, raw-2026-07-12-ratify-003): collector direct-retrieval pass LIVE-RATIFIED the Earth Simnavaz campaign + StealHook backdoor + CVE-2024-30088 linkage + psgfilter.dll password-filter DLL (T1556.002) against the Trend Micro primary — pending_direct_retrieval CLEARED on those campaign/tooling/technique claims. SINGLE-SOURCE DISCIPLINE: Trend Micro sole A-grade originator, all relays (cybersecuritynews/Dark Reading/SOC Prime/Industrial Cyber) NOT independent corroboration; recorded single-source provisional-A2-confirmed, NOT multi-A A1. NOT a rescore — espionage Capability already ceiling 5; score STAYS MEDIUM 4.9; Hard Rule 5 gate did NOT fire. +1 net-new atomic IOC (psgfilter.dll filename). STILL PENDING: Trend Micro StealHook IOC appendix (hashes/C2/emails, 403-blocked) + 2025-2026 OilRig/Crambus A-grade primary. Splunk re-run over -90d incl. new indicators = categorical zero (no bonus)."
+
+  - id: "024"
+    primary_name: "APT37"
+    aliases:
+      - ScarCruft
+      - Scarcruft
+      - Reaper
+      - Group123
+      - InkySquid
+      - RedEyes
+      - Ricochet Chollima
+      - ATK4
+      - StarCruft
+      - Operation Daybreak
+    attribution:
+      nation: KP
+      service: "MSS (Ministry of State Security) — per ESET via The Record 2026 framing; earlier reporting (FireEye/Mandiant 2018, Kaspersky, Cisco Talos, Volexity) attributed broadly to 'North Korean state interests' without specifying MSS vs. RGB"
+    type: "Nation-State APT"
+    threat_level: MEDIUM         # weighted overall 4.9 (MEDIUM) per /update-tracking 2026-05-10; espionage category HIGH (composite 8). Intent=3 Sector Association bound by evidence-minimum table — no A-grade source documents A&D-prime-direct targeting required for Intent=5. Operator-anticipated HIGH did NOT materialize; the disciplined Intent=3 outcome is the doctrine working as designed for an actor whose dominant targeting is civil-society / defectors / Korean-language journalists / regional industrial sectors.
+    tracked_since: 2026-05-09
+    dossier: threats/threat-actors/APT37/
+    last_reviewed: 2026-05-10
+    next_review_due: 2026-08-08
+    mitre_attack_id: G0067
+    note: "First-pass profile created 2026-05-09 from finding-2026-05-07-0004 (ESET via The Record — BirdCall / Sqgame Android supply-chain compromise targeting ethnic Koreans in Yanbian, China). Threat-box scoring 2026-05-10 via /update-tracking (Mode 2): weighted 4.9 → MEDIUM → auto-commit. Espionage composite 8 (category HIGH) but weighted overall MEDIUM because Intent=3 (Sector Association) — bound by evidence-minimum table — keeps Espionage from ceiling 10, and three floor categories (destructive 2, disruptive 2, cyber-crime 2) plus supply-chain MEDIUM (composite 6) dilute via doctrine weighting. Hard Rule 5 gate did NOT fire. Operator-anticipated HIGH did NOT materialize. A&D-prime relevance remains INDIRECT/STRUCTURAL (mobile capability + civil-society partner exposure + DPRK roster gap closure); A&D-direct targeting is undocumented in public reporting. Splunk first-party zero hits over -30d on 2026-05-10 sweep across primary search set. Closes structural gap in roster — prior DPRK coverage was RGB-only (Lazarus, Stardust Chollima); APT37 is MSS-attributed per recent reporting."
+
+  - id: "025"
+    primary_name: "Icarus"
+    aliases: []
+    attribution:
+      nation: unknown
+      service: null
+      persona: "Mr Brean"
+    type: "Cybercriminal (Extortion)"
+    threat_level: LOW            # weighted overall 2.2 (LOW) per /new-actor 2026-07-06; highest per-category is Supply Chain (composite 3, still LOW). Commodity novelty (-2 everywhere), no A&D-DIRECTED targeting (Intent floored 1-2 per evidence-minimum table — both named victims are cybersecurity firms, not A&D primes), thin capability base (single campaign, ~2 victims, ~7-week track record). Hard Rule 5 gate did NOT fire.
+    tracked_since: 2026-07-06
+    dossier: threats/threat-actors/Icarus/
+    last_reviewed: 2026-07-06
+    next_review_due: 2026-10-04
+    mitre_attack_id: null
+    note: "First-pass profile + initial scoring created 2026-07-06 via /new-actor Icarus (operator Ryan) from finding-2026-06-19-0003 (Klue/Salesforce supply-chain compromise; OAuth-token abuse via legacy integration credential). Single-IR-vendor (Huntress) attribution on actor-identity layer — admiralty B2, WEP 'likely'; publisher independence holds but evidence-basis independence fails. Hard Rule 2 BINDING: Icarus preserved as distinct net-new identity; NO cross-walk to ShinyHunters / UNC6395 / Scattered Spider (#013) / UNC3944 despite TTP-mirror pattern (THN 'mirrors' framing is methodological-similarity, not attribution overlap). SAT-KAC assumption A1 UNRESOLVED (Huntress primary not retrieved — whether 'Icarus is distinct' vs 'Huntress tracking unattributed activity under label'); SAT-ACH H1 (distinct actor) and H3 (UNC6395 affiliate/splinter) NOT operationally distinguishable on current evidence — standing tripwire. Threat-box weighted 2.2 → LOW → auto-commit. No IOCs published (indicator-empty iocs.yaml; OAuth/Salesforce hunt guidance only). Splunk first-party categorical zero over -90d (the host not a Salesforce-Klue tenant — visibility-bounded null, no bonus)."
+
+  - id: "026"
+    primary_name: "Cavern Manticore"
+    aliases: []                  # "Cavern" / "Cav3rn" are the C2 FRAMEWORK/toolset names, NOT actor aliases
+    attribution:
+      nation: IR
+      service: "MOIS (Ministry of Intelligence and Security) — per Check Point Research"
+    type: "Nation-State APT"
+    threat_level: LOW            # weighted overall 3.25 (LOW) per /new-actor 2026-07-07; espionage category MEDIUM (composite 5). Intent=3 Sector Association (evidence-minimum-table-bound — no A-grade source documents A&D-prime-DIRECT targeting; aviation named among sectors but victims are Israeli/Egyptian/UAE IT-provider/gov). Capability=3 Limited (single-source CPR, one report, CPR primary NOT directly retrieved) reduced by semi-custom novelty. Single-source veto applied; WEP likely.
+    tracked_since: 2026-07-07
+    dossier: threats/threat-actors/Cavern-Manticore/
+    last_reviewed: 2026-07-07
+    next_review_due: 2026-10-05
+    mitre_attack_id: null
+    note: "First-pass profile + initial scoring created 2026-07-07 via /new-actor Cavern Manticore (operator Ryan) from finding-2026-07-06-0001 (Check Point Research relayed by The Hacker News — new MOIS-affiliated cluster operating the 'Cavern'/'Cav3rn' modular .NET C2 framework against Israeli IT-provider/gov orgs; Israel primary + Egypt + UAE). SINGLE-SOURCE: CPR sole originating primary, The Hacker News pure relay (NOT independent corroboration); CPR primary NOT directly retrieved. Admiralty A2, WEP 'likely,' single-source veto applied. checkpoint-research provisional-A (72h ratification clock, pending direct retrieval + human ratification). Hard Rule 2 BINDING: CPR-noted tactical overlaps with MuddyWater (#022) and Lyceum/OilRig (#023, Lyceum = OilRig subgroup per CPR) recorded as CPR's assessment ONLY — NO roster cross-walk asserted; related_actors [022,023] reflects CPR-noted overlap, not an Archimedes attribution merge. finding-2026-07-06-0001 analyst_review_required=true — standing SAT-ACH open question (distinct cluster vs. MuddyWater/OilRig sub-cluster) NOT resolved by actor-profiler. 13 IOCs published (1 C2 domain hospitalinstallation[.]com + 7 sideloaded DLL filenames + 5 exploited CVEs by ID only per Hard Rule 3). Threat-box weighted 3.25 → LOW → auto-commit; Hard Rule 5 gate did NOT fire. Espionage category MEDIUM (composite 5) is the primary_threat_vector despite LOW overall. Splunk first-party sentinel 0 hits over -90d on C2 domain + distinctive DLL filenames (the host not an Israeli/Egyptian/UAE IT-provider/gov org — visibility-bounded null, no bonus). Calibrates below Iran-MOIS peers UNC1549 (5.4 MEDIUM) / APT34 (4.9 MEDIUM), near MuddyWater (4.15 LOW) / Charming Kitten (4.45 LOW)."
+    related_actors: ["022", "023"]   # CPR-noted tactical overlap only — NOT an Archimedes attribution merge (Hard Rule 2)
+
+  - id: "027"
+    primary_name: "Peach Sandstorm"
+    aliases:
+      - APT33            # FireEye / Mandiant
+      - Refined Kitten   # CrowdStrike
+      - HOLMIUM          # Microsoft (pre-Sandstorm element taxonomy)
+      - Elfin            # Symantec
+      - Curious Serpens  # Palo Alto Unit 42
+      - MAGNALLIUM       # Dragos (ICS/OT)
+    attribution:
+      nation: IR
+      service: "IRGC (per Microsoft; FireEye/Mandiant assess Iranian-government-directed)"
+      unit: null
+    type: "Nation-State APT"
+    threat_level: MEDIUM         # weighted overall 5.5 (MEDIUM) per /new-actor 2026-07-12; espionage category HIGH (composite 9). Intent=5 Target-Specific — multi-A-grade documentation of prime-direct US defense/satellite/aerospace targeting (FireEye 2017 + Microsoft 2023-2024) clears the evidence-minimum bar, in parity with UNC1549. Only Iranian roster actor with a documented destructive dimension (destructive composite 4, non-floor).
+    tracked_since: 2026-07-12
+    dossier: threats/threat-actors/Peach-Sandstorm/
+    last_reviewed: 2026-07-12
+    next_review_due: 2026-10-10
+    mitre_attack_id: G0064
+    note: "First-pass profile + initial scoring created 2026-07-12 via /new-actor Peach Sandstorm (operator Ryan). Seed reference finding-2026-05-22-0002 (Unit 42 'Paved With Intent' — Curious Serpens = Peach Sandstorm = APT33, ROADtools post-password-spray 2023); dossier body built from established public A-grade reporting (FireEye 2017, Microsoft 2023-2024, Symantec 2019, Kaspersky, CrowdStrike, Dragos, Unit 42). Threat-box weighted 5.5 → MEDIUM → auto-commit; Hard Rule 5 gate did NOT fire. Espionage category HIGH (composite 9) on Intent=5 Target-Specific — the ONLY Iranian roster actor besides UNC1549 (#004) to reach A&D-prime-direct targeting: multiple A-grade sources document US defense/satellite/aerospace targeting including the Defense Industrial Base (FalseFont Dec 2023, Tickler Aug 2024) and a named US aerospace victim (FireEye 2017). Calibrates ABOVE Iran peers — UNC1549 5.4, APT34 4.9, Charming Kitten 4.45, MuddyWater 4.15, Cavern Manticore 3.25. Also uniquely carries a documented destructive dimension (SHAPESHIFT/DROPSHOT + StoneDrill wiper ties per FireEye/Kaspersky), scored regional (destructive composite 4). Multi-A-grade — NO single-source veto; confidence A1. Hard Rule 2: all attribution inherits from cited sources, related_actors [004,011,023,022] are Iranian-nexus PEERS not merges. Hard Rule 3: CVEs by ID only. Splunk first-party sentinel 0 hits over -90d (visibility-bounded null — the host not a US A&D prime, no bonus). 6 aliases confirmed each against its originating vendor; dropped none. FOLD-IN 2026-07-12 (dossier v2, sourcing correction — NOT a rescore, score/level unchanged): collector direct-retrieval ratified FalseFont (Microsoft Dec 2023 + Unit 42 Mar 2024 + Nextron Jan 2024) and Tickler (Microsoft Aug 2024) campaigns; Tickler corrected to Microsoft-only (no retrievable Mandiant Tickler advisory — co-reporting pending_direct_retrieval); 32 atomic IOCs added to iocs.yaml/iocs.md; Intent=5 re-verified on corrected sources; Splunk re-run 0 hits -90d."
+    related_actors: ["004", "011", "023", "022"]   # Iranian-nexus PEERS for analytic context — NOT attribution merges (Hard Rule 2)
+
+  - id: "028"
+    primary_name: "CyberAv3ngers"
+    aliases:
+      - Soldiers of Solomon      # MITRE-associated
+      - Storm-0784               # Microsoft
+      - Bauxite                  # Dragos
+      - Hydro Kitten
+      - UNC5691                  # Mandiant
+      - Cyber4vengers            # Jan 2026 rebrand
+      - "APT IRAN"               # Telegram persona
+    attribution:
+      nation: IR
+      service: "IRGC-CEC (Cyber-Electronic Command)"
+      unit: null
+    type: "Nation-State APT (OT/ICS-focused) / hacktivist-fronted"
+    threat_level: LOW            # weighted overall 4.2 (LOW) per /new-actor 2026-07-14; DISRUPTIVE category HIGH (composite 8, primary_threat_vector), DESTRUCTIVE MEDIUM (7). LOW overall is a WEIGHTING ARTIFACT (espionage-heavy methodology vs an OT-disruption actor), NOT low risk — parallels UNC1549 espionage-10/overall-MEDIUM, inverted. Intent held at Ideology (4) not Target-Specific (5): NO A-grade source names an A&D/DIB victim; A&D relevance is STRUCTURAL/INDIRECT via OT/ICS exposure.
+    tracked_since: 2026-07-14
+    dossier: threats/threat-actors/CyberAv3ngers/
+    last_reviewed: 2026-07-14
+    next_review_due: 2026-10-12
+    mitre_attack_id: G1027
+    note: "First-pass profile + initial scoring created 2026-07-14 via /new-actor CyberAv3ngers (operator Ryan). Net-new roster actor (#028; roster max prior #027 Peach Sandstorm). IRGC-CEC OT/ICS attack group. MULTI-A-GRADE, NO single-source veto: CISA six-agency AA26-097A (Apr 2026) + CISA AA23-335A (Dec 2023/upd Dec 2024) + IC3 CSAs (231201, 260407) + Claroty Team82 IOCONTROL report (Dec 2024, originating IOC source) + MITRE G1027 + US Treasury OFAC (Feb 2024). Confidence A1. Threat-box weighted 4.2 → LOW → auto-commit; Hard Rule 5 gate did NOT fire. Per-category DISRUPTIVE HIGH (composite 8) is the primary_threat_vector (Intent=4 Ideology + Capability=4 after -1 semi-custom on demonstrated US-critical-infra OT disruption — Unitronics 2023-24 + CVE-2021-22681 2026, CISA-confirmed operational disruption + financial loss); DESTRUCTIVE MEDIUM (composite 7, HMI defacement/manipulation ceiling, no confirmed wiper); ESPIONAGE LOW (3), SUPPLY CHAIN LOW (3), CYBER-CRIME LOW (2). LOW overall is a weighting artifact — NOT low risk. A&D-prime relevance INDIRECT/STRUCTURAL — OT/ICS footprint (manufacturing/test-range/facilities SCADA) shares the vuln classes exploited; NO A&D/DIB victim named, so Intent held at Ideology=4 (parallels Handala #014). HARD RULE 2 BINDING: all attribution inherits from cited sources; vendor cluster overlaps (Storm-0784/Bauxite/UNC5691/Hydro Kitten/Soldiers of Solomon/Cyber4vengers/APT IRAN) recorded as those vendors' designations NOT Archimedes merges; Dec-2025 Moses Staff operational overlap = cited overlap only; GigaWiper (finding-2026-07-12-iran-ondemand-0001) = CODE LINEAGE ONLY (embedded Crucio), its C2 IPs 185.182.193.21/212.8.248.104 NOT folded, campaign NOT attributed. HARD RULE 3: CVE-2021-22681 + Unitronics default-cred by ID/name only, defensive framing (CVE-2021-22681 flagged for vuln-tracker handoff — CISA KEV Mar 2026, no vendor patch). HARD RULE 7: IOCONTROL MQTT client_id/username/password + AES key/IV are malware-internal artifacts derived from sample GUID (Claroty technical IOCs), recorded as detection detail NOT victim credentials. IOCs folded: ~24 atomic (1 SHA256, 3 C2 domains, 1 C2 IP, 1 CVE, 5 GUID-derived malware-internal artifacts, 6 host file-paths, 3 MQTT topics, 1 default-cred pattern). CISA AA26-097A primary URL 403 on direct fetch — cited via IC3 260407 PDF + Tenable relay, flagged pending_direct_retrieval. Splunk first-party sweep 2026-07-14: 0 hits over -90d on SHA256/C2-IP/domains/GUID (both indices live: archimedes 1716, defenseclaw_local 6 events -90d — visibility-bounded null, no bonus). Calibrates between MuddyWater (4.15 LOW) and Charming Kitten (4.45 LOW); below Handala Hack (5.45 MEDIUM, which carries higher espionage composite 7 + confirmed BiBi wiper destructive 9). related_actors [004,014,027] = Iranian-nexus peers NOT merges."
+    related_actors: ["004", "014", "027"]   # Iranian-nexus PEERS for analytic context — NOT attribution merges (Hard Rule 2); #014 Handala is the closest analog
+
+  - id: "029"
+    primary_name: "Pioneer Kitten"
+    aliases:
+      - Fox Kitten          # ClearSky / Dragos / CrowdStrike
+      - UNC757              # Mandiant / CISA
+      - Parisite            # Dragos / ClearSky
+      - RUBIDIUM            # Microsoft (former)
+      - Lemon Sandstorm     # Microsoft (current)
+    attribution:
+      nation: IR
+      service: "IRGC-linked / Government of Iran (GOI)"   # AA24-241A says 'GOI'; CrowdStrike/industry sharpen to IRGC-aligned; MITRE 'suspected nexus'; Dragos abstains — NOT hardened to 'IRGC-directed'
+      unit: null
+      front_company: "Danesh Novin Sahand (company ID 14007585836) — NOT ASA/Cotton Sandstorm (Hard Rule 2 non-merge)"
+    type: "Nation-State APT (state-intelligence + access-broker / ransomware-enabler dual-track)"
+    threat_level: MEDIUM         # weighted overall 5.5 (MEDIUM) per /new-actor 2026-07-14; espionage category HIGH (composite 8, primary_threat_vector). Intent held at Ideology=4 (no A&D prime named; A&D relevance sector-level, parallels Handala #014 / CyberAv3ngers #028). Broad non-floor profile (disruptive 5, cyber-crime 5, destructive 4) — the ONLY roster Iranian actor with a genuine cyber-crime/ransomware-enablement dimension; that versatility, not a single ceiling, drives the MEDIUM.
+    tracked_since: 2026-07-14
+    dossier: threats/threat-actors/Pioneer-Kitten/
+    last_reviewed: 2026-07-14
+    next_review_due: 2026-10-12
+    mitre_attack_id: G0117
+    note: "First-pass profile + initial scoring created 2026-07-14 via /new-actor Pioneer Kitten (operator Ryan). Net-new roster actor (#029; roster max prior #028 CyberAv3ngers). Iran IRGC-linked state-intelligence + access-broker/ransomware-enabler dual-track. LOAD-BEARING PRIMARY: FBI/CISA/DC3 AA24-241A (2024-08-28) — SINGLE originating US-gov primary on the GOI-attribution + ransomware-enablement + network-IOC-appendix layer (page 403s WAF; IC3 PDF corrupted; reconstructed via clean relays this build — PENDING DIRECT RETRIEVAL). INDEPENDENT identity corroboration from the vendor cluster (MITRE G0117 curated + Dragos PARISITE direct primary + CrowdStrike PIONEER KITTEN + Microsoft RUBIDIUM/Lemon Sandstorm) and independent recent-campaign corroboration from FortiGuard IR (first-corpus-surface provisional-A, pending human ratification) — the 2-year Middle East CNI intrusion (May 2023→early 2025) with novel backdoors (HanifNet/HXLibrary/NeoExpressRAT/Havoc) + SUSPECTED destructive prepositioning ('may have been positioning' — HEDGE preserved, Dragos counter: no observed ICS destructive capability). Confidence A2 (pending-direct-retrieval state of both originating primaries + single-primary basis of the ransomware/IOC layer); NO single-source veto on core facts (identity + espionage/edge-exploitation multi-body-corroborated), single-primary caveat applied to ransomware-affiliate detail + IOC appendix. Threat-box weighted 5.5 → MEDIUM → auto-commit (notification); Hard Rule 5 gate did NOT fire. Espionage category HIGH (composite 8) = primary_threat_vector (Intent=4 Ideology + Cap=5 significant after -1 semi-custom); disruptive MEDIUM (5), cyber-crime MEDIUM (5, the distinctive dual-track feature — commodity RaaS novelty -2), destructive LOW-but-non-floor (4, on the FortiGuard prepositioning hedge — NOT a confirmed wiper), supply-chain LOW (3). Intent held at Ideology=4 NOT Target-Specific=5 because NO A-grade source names a specific US A&D prime/DIB contractor — AA24-241A + MITRE name the 'defense' SECTOR, Dragos names 'aerospace' SECTOR; A&D relevance STRUCTURAL/SECTOR-LEVEL. Calibrates at Peach Sandstorm (#027, 5.5, different path — Peach Intent=5 espionage-dominant vs Pioneer Intent=4 but broader); above UNC1549 (5.4), APT34 (4.9), and the Iranian LOW cluster (Charming Kitten 4.45, CyberAv3ngers 4.2, MuddyWater 4.15, Cavern Manticore 3.25). HARD RULE 2 BINDING: GOI-vs-IRGC-vs-suspected-nexus-vs-Dragos-abstention confidence spread preserved (not hardened); alias cluster = vendors'/MITRE mapping; EXPLICIT NON-MERGES — Aria Sepehr Ayandehsazan (ASA) = Emennet Pasargad rename = Cotton Sandstorm front is a SEPARATE actor NOT folded (only Danesh Novin Sahand is the Pioneer Kitten front), and ransomware affiliates NoEscape/RansomHouse/ALPHV-BlackCat are collaborators NOT identities; related_actors [004,027,011,028,022,023] = Iranian-nexus peers NOT merges. HARD RULE 3: 10 exploited edge/VPN CVEs by ID/product only (Citrix/Pulse-Ivanti/PAN-OS/Check Point/F5/Fortinet), all vuln-tracker handoff candidates. HARD RULE 7: no credentials stored (Br0k3r/xplfinder = persona handles; front-co reg ID is public record). IOCs folded: 10 CVEs by ID + 2 persona handles (Br0k3r/xplfinder) + Danesh Novin Sahand front-co attribution note; network IOC appendices (AA24-241A IPs/domains/hashes/emails + FortiGuard backdoor hashes/C2) held PENDING DIRECT RETRIEVAL (NOT fabricated); backdoor families recorded as tooling not atomic IOCs. Splunk first-party sweep 2026-07-14: 0 hits over -90d across archimedes (1725 events) + defenseclaw_local (6 events), both live — visibility-bounded null, no bonus. NEW SOURCE: fortinet-fortiguard flagged for librarian to open a provisional source-grades.yaml entry (Tier-1 vendor-research first-surface precedent)."
+    related_actors: ["004", "027", "011", "028", "022", "023"]   # Iranian-nexus PEERS for analytic context — NOT attribution merges (Hard Rule 2)
+
+# ============================================================================
+# Quick-lookup indices (regenerated when roster changes)
+# ============================================================================
+_meta:
+  total_actors: 29
+  by_threat_level:
+    HIGH: 16          # Cl0p (#018) moved out of HIGH — its HIGH was a never-scored placeholder; first-pass scoring 2026-08-12 landed MEDIUM (weighted 4.6). (Handala Hack #014 similarly moved MEDIUM 2026-07-12.)
+    MEDIUM: 8          # REvil, APT34, UNC1549, APT37, Peach Sandstorm, Handala Hack, Pioneer Kitten, Cl0p (per first-pass scoring 2026-08-12; supply_chain category HIGH composite 8, weighted overall 4.6 MEDIUM; MEDIUM is a weighting artifact for a criminal-extortion actor, NOT low risk)
+    LOW: 5            # Charming Kitten, MuddyWater (per /update-tracking 2026-05-09; both espionage category MEDIUM/HIGH but weighted overall LOW), Icarus (per /new-actor 2026-07-06; extortion actor, weighted 2.2, single-IR-vendor B2), Cavern Manticore (per /new-actor 2026-07-07; Iran-MOIS espionage cluster, weighted 3.25, single-source CPR A2, espionage category MEDIUM composite 5), CyberAv3ngers (per /new-actor 2026-07-14; IRGC-CEC OT/ICS actor, weighted 4.2, multi-A-grade A1, DISRUPTIVE category HIGH composite 8 — LOW overall is a weighting artifact NOT low risk)
+  by_nation:
+    RU: 5          # APT28, Sandworm, APT29, LockBit (RU-linked), Cl0p (RU-linked), REvil
+    CN: 4          # Volt Typhoon, Salt Typhoon, APT40, APT41
+    IR: 9          # UNC1549, Charming Kitten, Handala, MuddyWater, APT34, Cavern Manticore, Peach Sandstorm, CyberAv3ngers, Pioneer Kitten
+    KP: 3          # Stardust Chollima, Lazarus, APT37
+    unknown: 8     # TeamPCP, GlassWorm, Miyako, Scattered Spider, BlackCat, Payouts King, Icarus, (LockBit/Cl0p attributed RU)
+  profiles_migrated: 1         # APT28 only at v1
+  profiles_pending: 3          # APT40, BlackCat, Payouts King (Handala Hack #014 first-pass built 2026-07-12; Cl0p #018 first-pass built 2026-08-12)
+  profiles_first_pass: 12      # + Cl0p (#018, 2026-08-12 first-pass build of pre-existing HIGH stub). APT34 (Session 9 pre-work) + UNC1549 + Charming Kitten + MuddyWater (2026-05-06 batch) + APT37 (2026-05-09) + Icarus (2026-07-06 /new-actor) + Cavern Manticore (2026-07-07 /new-actor) + Peach Sandstorm (2026-07-12 /new-actor) + Handala Hack (2026-07-12 first-pass build of pre-existing stub) + CyberAv3ngers (2026-07-14 /new-actor) + Pioneer Kitten (2026-07-14 /new-actor)
+  scoring_complete: 12         # + Cl0p (#018, 2026-08-12 first-pass scoring, initial MEDIUM — weighted 4.6; supply_chain category HIGH composite 8 primary vector, cyber_crime MEDIUM 7; MEDIUM overall is a weighting artifact of the espionage-heavy methodology applied to a criminal-extortion actor, NOT low risk; established A1 campaign history but 2026 Windchill Cl0p tie B3/suspected and NOT relied upon for scoring; Hard Rule 5 gate did NOT fire). APT34 (Session 9 pre-work, initial MEDIUM); UNC1549 (2026-05-09 /update-tracking, initial MEDIUM); Charming Kitten (2026-05-09 /update-tracking, initial LOW — red-team qualify Intent=4 → weighted LOW despite category HIGH); MuddyWater (2026-05-09 /update-tracking, initial LOW — fourth workflow validation pass; red-team qualify Intent=3 Sector Association bound, 72h clock fired with no corroboration, weighted LOW despite category MEDIUM on espionage); APT37 (2026-05-10 /update-tracking, initial MEDIUM — fifth workflow validation pass; evidence-minimum-table-bound Intent=3 Sector Association, espionage category HIGH composite 8 but weighted overall MEDIUM because Intent=3 keeps espionage from ceiling 10 and three floor categories plus supply-chain MEDIUM dilute via doctrine weighting; Hard Rule 5 gate did NOT fire); Icarus (2026-07-06 /new-actor, initial LOW — weighted 2.2, single-IR-vendor B2 extortion actor, commodity novelty + no A&D-directed targeting + thin capability base, Hard Rule 5 gate did NOT fire); Cavern Manticore (2026-07-07 /new-actor, initial LOW — weighted 3.25, single-source CPR A2 Iran-MOIS espionage cluster, evidence-minimum-table-bound Intent=3 Sector Association + Capability=3 Limited on one-report base, espionage category MEDIUM composite 5, Hard Rule 5 gate did NOT fire); Peach Sandstorm (2026-07-12 /new-actor, initial MEDIUM — weighted 5.5; the FIRST Iranian /new-actor to reach Intent=5 Target-Specific on the evidence-minimum table via multi-A-grade prime-direct US defense/satellite/aerospace documentation (FireEye 2017 + Microsoft 2023-2024), espionage category HIGH composite 9, in parity with UNC1549; only Iranian roster actor with a non-floor destructive category (composite 4, documented wiper ties); multi-A-grade so NO single-source veto, confidence A1; Hard Rule 5 gate did NOT fire); Handala Hack (2026-07-12 first-pass build of pre-existing stub, initial MEDIUM — weighted 5.45; single-origin CPR A2 on persona attribution; UNIQUE among roster Iran-MOIS actors with a per-category Destructive HIGH composite 9 on custom wiper arsenal + demonstrated Stryker Intune MDM mass-wipe; MEDIUM overall is a weighting artifact not low risk — parallels UNC1549 espionage-10/overall-MEDIUM; Intent held at Ideology=4 not Target-Specific because no A&D prime named — A&D relevance INDIRECT/STRUCTURAL via portable Intune/MDM mass-wipe TTP; Hard Rule 5 gate did NOT fire); CyberAv3ngers (2026-07-14 /new-actor, initial LOW — weighted 4.2; IRGC-CEC OT/ICS attack actor; MULTI-A-GRADE (CISA six-agency AA26-097A + AA23-335A + IC3 + Claroty Team82 IOCONTROL + MITRE G1027 + OFAC), confidence A1, NO single-source veto; per-category DISRUPTIVE HIGH composite 8 (Intent=4 Ideology + Capability=4 after -1 semi-custom on CISA-confirmed US-critical-infra OT disruption) is the primary_threat_vector, DESTRUCTIVE MEDIUM composite 7; LOW overall is a WEIGHTING ARTIFACT — the espionage-heavy (35%) methodology caps an OT-disruption actor whose espionage/supply-chain relevance to an A&D prime is near-floor (composites 3/3), NOT low risk (parallels UNC1549 espionage-10/overall-MEDIUM, inverted); Intent held at Ideology=4 not Target-Specific=5 because NO A-grade source names an A&D/DIB victim, A&D relevance STRUCTURAL/INDIRECT via OT/ICS footprint; Hard Rules 2/3/7 preserved — no originated attribution, CVE-2021-22681 by ID only, IOCONTROL GUID-derived MQTT/AES artifacts recorded as detection detail not victim creds; GigaWiper code-lineage-only cross-ref, its C2 IPs NOT folded; Hard Rule 5 gate did NOT fire); Pioneer Kitten (2026-07-14 /new-actor, initial MEDIUM — weighted 5.5; Iran IRGC-linked state-intelligence + access-broker/ransomware-enabler dual-track (#029; roster max prior #028); espionage category HIGH composite 8 (Intent=4 Ideology + Cap=5 significant after -1 semi-custom) is the primary_threat_vector, but the MEDIUM is DRIVEN BY VERSATILITY — the ONLY roster Iranian actor with a genuine cyber-crime/ransomware-enablement dimension (composite 5, commodity RaaS novelty -2), plus disruptive MEDIUM (5) and destructive LOW-but-non-floor (4) on the FortiGuard suspected-prepositioning hedge (NOT a confirmed wiper; Dragos counter: no observed ICS destructive capability); supply-chain LOW (3); Intent held at Ideology=4 NOT Target-Specific=5 because NO A-grade source names a US A&D prime/DIB contractor — AA24-241A + MITRE name the 'defense' SECTOR, Dragos names 'aerospace' SECTOR, A&D relevance STRUCTURAL/SECTOR-LEVEL (parallels Handala #014 / CyberAv3ngers #028); confidence A2 — SINGLE originating US-gov primary AA24-241A (pending direct retrieval) on the GOI-attribution + ransomware-enablement + IOC-appendix layer, but identity + espionage/edge-exploitation capability multi-body-corroborated (MITRE G0117 + Dragos + CrowdStrike + Microsoft + FortiGuard IR), so NO single-source veto on core facts, single-primary caveat applied only to the ransomware-affiliate detail + IOC appendix; calibrates at Peach Sandstorm 5.5 (different path) above UNC1549 5.4 / APT34 4.9 and the Iranian LOW cluster; Hard Rules 2/3/7 preserved — GOI-vs-IRGC confidence spread not hardened, ASA/Cotton-Sandstorm + ransomware affiliates explicitly NON-merged, 10 CVEs by ID only, no credentials stored; Splunk 0 hits -90d visibility-bounded null; Hard Rule 5 gate did NOT fire). APT28 awaits methodology rerun.
+  scoring_template_only: 0     # APT37 scored 2026-05-10; no remaining TEMPLATE-only dossiers.
