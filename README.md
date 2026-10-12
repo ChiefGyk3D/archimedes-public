@@ -4,6 +4,8 @@ An autonomous cyber threat intelligence analyst. Collects, grades, analyzes, and
 
 > *"Intelligence is only useful if it's actionable."*
 
+> **Public snapshot.** This repository is a read-only snapshot of a personal project as of September 14, 2026, published for reference and teaching. Host, network and workplace details have been removed, and the git history starts fresh here. Scheduled briefs ran from May 1 to August 2, 2026; the corpus is not being updated in this repo. It is not affiliated with or endorsed by any employer.
+
 ---
 
 ## What this is
@@ -52,7 +54,7 @@ Every finding carries an Admiralty Scale digraph (e.g., `A2`, `B2`) — source r
 
 ## Tracked adversaries
 
-22 threat actor dossiers, covering Russian GRU/SVR, Iranian IRGC/MOIS, Chinese MSS/PLA, DPRK, and major cybercriminal syndicates. Full roster in `threats/threat-actors/_roster.yaml`.
+A roster of 29 tracked actors (13 with full dossiers), covering Russian GRU/SVR, Iranian IRGC/MOIS, Chinese MSS/PLA, DPRK, and major cybercriminal syndicates. Full roster in `threats/threat-actors/_roster.yaml`.
 
 ## What this project is NOT
 
@@ -67,7 +69,11 @@ See `doctrine/INTEL-OPERATIONS.md` for operational details and `CLAUDE.md` for t
 
 ## License
 
-Private repository. Not licensed for external use.
+Copyright © 2026 Ryan. All rights reserved.
+
+You're welcome to read, study and reference this repository, and to reuse its ideas in your own work. Copying or redistributing the code, doctrine or intelligence corpus requires permission. Threat reporting summarized in `threats/` remains the property of the original publishers, who are cited in each file.
+
+Nothing here is an official assessment, and none of it should be treated as current: intelligence findings reflect open-source reporting at the time they were written.
 
 ## Author
 
